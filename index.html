@@ -1,0 +1,100 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen">
+
+    <title>Stipp BookHouse</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="app">
+        <header class="site-header">
+            <div class="brand">
+                <div class="brand-mark">S</div>
+
+                <div class="brand-text">
+                    <h1>Stipp BookHouse</h1>
+                    <span>Biblioteca Escolar</span>
+                </div>
+            </div>
+
+            <nav class="main-nav">
+                <a href="#inicio">Início</a>
+                <a href="#catalogo">Catálogo</a>
+                <a href="#sobre">Sobre</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="inicio" class="hero">
+                <div class="hero-content">
+                    <span class="eyebrow">E.E. Maria de Lourdes Stipp Steffen</span>
+
+                    <h2>
+                        Um lugar para encontrar
+                        <span>novas histórias.</span>
+                    </h2>
+
+                    <p>
+                        Explore o acervo da nossa biblioteca, descubra novos livros
+                        e encontre sua próxima leitura.
+                    </p>
+
+                    <a href="#catalogo" class="primary-button">
+                        Explorar catálogo
+                    </a>
+                </div>
+            </section>
+
+            <section id="catalogo" class="catalog-section">
+                <div class="section-heading">
+                    <span class="eyebrow">Acervo</span>
+                    <h2>Catálogo da biblioteca</h2>
+                    <p>
+                        Encontre livros por título, autor, gênero ou categoria.
+                    </p>
+                </div>
+
+                <div class="catalog-search">
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Pesquisar livro, autor ou gênero..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div id="bookGrid" class="book-grid">
+                    <!-- Os livros serão carregados pelo JavaScript -->
+                </div>
+            </section>
+
+            <section id="sobre" class="about-section">
+                <div class="section-heading">
+                    <span class="eyebrow">Sobre</span>
+                    <h2>Stipp BookHouse</h2>
+                    <p>
+                        Uma biblioteca escolar mais organizada, acessível
+                        e fácil de explorar.
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>Stipp BookHouse © 2026</p>
+            <p>E.E. Maria de Lourdes Stipp Steffen</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+```
