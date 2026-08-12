@@ -46,23 +46,37 @@ function renderBooks(list) {
 
 async function loadBooks() {
     bookGrid.innerHTML = `
-        <p>Carregando catálogo...</p>
+        <p>Testando conexão com o banco...</p>
     `;
 
-    const { data, error } = await db
-        .from("books")
-        .select("*")
-        .order("title", { ascending: true });
+    try {
+        if (typeof supabase === "undefined") {
+            throw new Error("A biblioteca do Supabase não foi carregada.");
+        }
 
-if (error) {
-    console.error("Erro ao carregar livros:", error);
+        const { data, error } = await db
+            .from("books")
+            .select("*")
+            .order("title", { ascending: true });
 
-    bookGrid.innerHTML = `
-        <p>Erro ao carregar catálogo:</p>
-        <p>${error.message}</p>
-    `;
+        if (error) {
+            throw new Error(
+                `Supabase: ${error.message} | Código: ${error.code || "sem código"}`
+            );
+        }
 
-    return;
+        books = data || [];
+
+        renderBooks(books);
+
+    } catch (error) {
+        console.error("ERRO COMPLETO:", error);
+
+        bookGrid.innerHTML = `
+            <p><strong>Erro de conexão:</strong></p>
+            <p>${error.message}</p>
+        `;
+    }
 }
 
     books = data || [];
