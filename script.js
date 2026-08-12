@@ -172,6 +172,12 @@ const adminUserName = document.getElementById("adminUserName");
 const logoutButton = document.getElementById("logoutButton");
 const showCatalogForm = document.getElementById("showCatalogForm");
 
+const catalogFormContainer =
+    document.getElementById("catalogFormContainer");
+
+const closeCatalogForm =
+    document.getElementById("closeCatalogForm");
+
 function openSidePanel() {
     sidePanel.classList.add("active");
     sidePanelOverlay.classList.add("active");
@@ -339,6 +345,27 @@ if (loginForm) {
     );
 }
 
+// ==============================
+// FORMULÁRIO DE CATALOGAÇÃO
+// ==============================
+
+if (showCatalogForm) {
+    showCatalogForm.addEventListener("click", () => {
+
+        catalogFormContainer.classList.add("active");
+
+        showCatalogForm.style.display = "none";
+    });
+}
+
+if (closeCatalogForm) {
+    closeCatalogForm.addEventListener("click", () => {
+
+        catalogFormContainer.classList.remove("active");
+
+        showCatalogForm.style.display = "flex";
+    });
+}
 
 // ==============================
 // LOGOUT
