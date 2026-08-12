@@ -28,7 +28,7 @@
     <a href="#inicio">Início</a>
     <a href="#catalogo">Catálogo</a>
     <a href="#sobre">Sobre</a>
-    <a href="#login" id="loginButton">Entrar</a>
+    <button id="loginButton" class="nav-login-button">Entrar</button>
 </nav>
         </header>
 
@@ -76,131 +76,6 @@
                 </div>
             </section>
 
-
-            <section id="login" class="login-section">
-    <div class="section-heading">
-        <span class="eyebrow">Área restrita</span>
-        <h2>Entrar no Stipp BookHouse</h2>
-        <p>Acesse sua conta para utilizar os recursos da biblioteca.</p>
-    </div>
-
-    <form id="loginForm" class="login-form">
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="E-mail"
-            required
-        >
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Senha"
-            required
-        >
-
-        <button type="submit" class="primary-button">
-            Entrar
-        </button>
-
-        <p id="loginMessage"></p>
-    </form>
-</section>
-
-
-<section id="adminPanel" class="admin-section" style="display: none;">
-    <div class="section-heading">
-        <span class="eyebrow">Administração</span>
-        <h2>Painel da biblioteca</h2>
-        <p>Gerencie o acervo do Stipp BookHouse.</p>
-    </div>
-
-    <div class="admin-actions">
-        <button id="showCatalogForm" class="primary-button">
-            + Cadastrar livro
-        </button>
-
-        <button id="logoutButton" class="secondary-button">
-            Sair
-        </button>
-    </div>
-
-    <div id="catalogFormContainer" style="display: none;">
-        <form id="catalogForm" class="catalog-form">
-
-            <input
-                type="text"
-                id="bookTitle"
-                placeholder="Título *"
-                required
-            >
-
-            <input
-                type="text"
-                id="bookAuthor"
-                placeholder="Autor *"
-                required
-            >
-
-            <input
-                type="text"
-                id="bookISBN"
-                placeholder="ISBN"
-            >
-
-            <input
-                type="text"
-                id="bookPublisher"
-                placeholder="Editora"
-            >
-
-            <input
-                type="number"
-                id="bookYear"
-                placeholder="Ano de publicação"
-            >
-
-            <input
-                type="text"
-                id="bookGenre"
-                placeholder="Gênero"
-            >
-
-            <input
-                type="text"
-                id="bookLocation"
-                placeholder="Localização na estante"
-            >
-
-            <input
-                type="url"
-                id="bookCover"
-                placeholder="URL da capa"
-            >
-
-            <textarea
-                id="bookDescription"
-                placeholder="Descrição do livro"
-                rows="5"
-            ></textarea>
-
-            <input
-                type="number"
-                id="bookCopies"
-                placeholder="Quantidade de exemplares"
-                min="1"
-                value="1"
-                required
-            >
-
-            <button type="submit" class="primary-button">
-                Cadastrar livro
-            </button>
-
-            <p id="catalogMessage"></p>
-        </form>
-    </div>
-</section>
             
             <section id="sobre" class="about-section">
                 <div class="section-heading">
@@ -214,6 +89,110 @@
             </section>
         </main>
 
+
+        <!-- PAINEL LATERAL -->
+<div id="sidePanelOverlay" class="side-panel-overlay"></div>
+
+<aside id="sidePanel" class="side-panel">
+
+    <div class="side-panel-header">
+        <div>
+            <span class="eyebrow">Stipp BookHouse</span>
+            <h2 id="sidePanelTitle">Entrar</h2>
+        </div>
+
+        <button
+            id="closeSidePanel"
+            class="close-side-panel"
+            aria-label="Fechar painel"
+        >
+            ×
+        </button>
+    </div>
+
+    <!-- LOGIN -->
+
+    <div id="loginPanel">
+
+        <p class="side-panel-description">
+            Entre na sua conta para acessar os recursos exclusivos da biblioteca.
+        </p>
+
+        <form id="loginForm" class="login-form">
+
+            <label for="loginEmail">
+                E-mail
+            </label>
+
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="seu@email.com"
+                required
+            >
+
+            <label for="loginPassword">
+                Senha
+            </label>
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Sua senha"
+                required
+            >
+
+            <button type="submit" class="primary-button">
+                Entrar
+            </button>
+
+            <p id="loginMessage"></p>
+
+        </form>
+
+    </div>
+
+    <!-- PAINEL DO ADMIN -->
+
+    <div id="adminPanel" class="admin-panel">
+
+        <div class="admin-welcome">
+            <span class="eyebrow">Área administrativa</span>
+
+            <h3>Bem-vindo!</h3>
+
+            <p id="adminUserName">
+                Administrador
+            </p>
+        </div>
+
+        <div class="admin-menu">
+
+            <button
+                id="showCatalogForm"
+                class="admin-menu-button"
+            >
+                <span>📚</span>
+                <div>
+                    <strong>Catalogar livros</strong>
+                    <small>Adicionar livros ao acervo</small>
+                </div>
+            </button>
+
+        </div>
+
+        <button
+            id="logoutButton"
+            class="secondary-button logout-button"
+        >
+            Sair da conta
+        </button>
+
+    </div>
+
+</aside>
+
+        
         <footer class="site-footer">
             <p>Stipp BookHouse © 2026</p>
             <p>E.E. Maria de Lourdes Stipp Steffen</p>
@@ -224,4 +203,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-```
