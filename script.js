@@ -155,59 +155,240 @@ if (loginForm) {
 
 
 // ==============================
-// PAINEL ADMINISTRATIVO
+// PAINEL LATERAL E AUTENTICAÇÃO
 // ==============================
 
+const loginButton = document.getElementById("loginButton");
+const sidePanel = document.getElementById("sidePanel");
+const sidePanelOverlay = document.getElementById("sidePanelOverlay");
+const closeSidePanel = document.getElementById("closeSidePanel");
+
+const loginPanel = document.getElementById("loginPanel");
 const adminPanel = document.getElementById("adminPanel");
+
+const sidePanelTitle = document.getElementById("sidePanelTitle");
+const adminUserName = document.getElementById("adminUserName");
+
 const logoutButton = document.getElementById("logoutButton");
 const showCatalogForm = document.getElementById("showCatalogForm");
-const catalogFormContainer = document.getElementById("catalogFormContainer");
+
+function openSidePanel() {
+    sidePanel.classList.add("active");
+    sidePanelOverlay.classList.add("active");
+    document.body.classList.add("panel-open");
+}
+
+function closeSidePanelFunction() {
+    sidePanel.classList.remove("active");
+    sidePanelOverlay.classList.remove("active");
+    document.body.classList.remove("panel-open");
+}
+
+if (loginButton) {
+    loginButton.addEventListener("click", openSidePanel);
+}
+
+if (closeSidePanel) {
+    closeSidePanel.addEventListener(
+        "click",
+        closeSidePanelFunction
+    );
+}
+
+if (sidePanelOverlay) {
+    sidePanelOverlay.addEventListener(
+        "click",
+        closeSidePanelFunction
+    );
+}
+
+
+// ==============================
+// VERIFICAR USUÁRIO
+// ==============================
 
 async function checkUser() {
+
     const {
         data: { user }
     } = await db.auth.getUser();
 
+    // Usuário não está logado
     if (!user) {
+
+        loginPanel.style.display = "block";
+        adminPanel.style.display = "none";
+
+        sidePanelTitle.textContent = "Entrar";
+
         return;
     }
 
+
+    // Buscar perfil
     const { data: profile, error } = await db
         .from("profiles")
         .select("full_name, role")
         .eq("id", user.id)
         .single();
 
+
     if (error) {
-        console.error("Erro ao carregar perfil:", error);
+
+        console.error(
+            "Erro ao carregar perfil:",
+            error
+        );
+
         return;
     }
 
-    console.log("Perfil:", profile);
 
+    // Usuário administrador
     if (profile.role === "admin") {
+
+        loginPanel.style.display = "none";
         adminPanel.style.display = "block";
+
+        sidePanelTitle.textContent =
+            "Painel da biblioteca";
+
+        adminUserName.textContent =
+            profile.full_name || "Administrador";
+
+        loginButton.textContent =
+            "Painel";
+
+        return;
     }
+
+
+    // Usuário autenticado, mas sem permissão administrativa
+
+    loginPanel.style.display = "none";
+    adminPanel.style.display = "none";
+
+    sidePanelTitle.textContent =
+        "Conta";
+
+    loginButton.textContent =
+        "Minha conta";
 }
 
-if (showCatalogForm) {
-    showCatalogForm.addEventListener("click", () => {
-        catalogFormContainer.style.display = "block";
-        showCatalogForm.style.display = "none";
-    });
+
+// ==============================
+// LOGIN
+// ==============================
+
+if (loginForm) {
+
+    loginForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+            const email =
+                document.getElementById(
+                    "loginEmail"
+                ).value;
+
+            const password =
+                document.getElementById(
+                    "loginPassword"
+                ).value;
+
+            loginMessage.textContent =
+                "Entrando...";
+
+
+            const { data, error } =
+                await db.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Erro no login:",
+                    error
+                );
+
+                loginMessage.textContent =
+                    "E-mail ou senha incorretos.";
+
+                return;
+            }
+
+
+            loginMessage.textContent =
+                "Login realizado com sucesso!";
+
+
+            await checkUser();
+
+
+            setTimeout(() => {
+
+                loginMessage.textContent = "";
+
+            }, 1000);
+        }
+    );
 }
+
+
+// ==============================
+// LOGOUT
+// ==============================
 
 if (logoutButton) {
-    logoutButton.addEventListener("click", async () => {
-        const { error } = await db.auth.signOut();
 
-        if (error) {
-            console.error("Erro ao sair:", error);
-            return;
+    logoutButton.addEventListener(
+        "click",
+        async () => {
+
+            const { error } =
+                await db.auth.signOut();
+
+
+            if (error) {
+
+                console.error(
+                    "Erro ao sair:",
+                    error
+                );
+
+                return;
+            }
+
+
+            loginPanel.style.display =
+                "block";
+
+            adminPanel.style.display =
+                "none";
+
+            sidePanelTitle.textContent =
+                "Entrar";
+
+            loginButton.textContent =
+                "Entrar";
+
+            document.getElementById(
+                "loginEmail"
+            ).value = "";
+
+            document.getElementById(
+                "loginPassword"
+            ).value = "";
+
         }
-
-        window.location.reload();
-    });
+    );
 }
 
+
+// Verificar sessão ao carregar
 checkUser();
