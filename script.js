@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://frtgxcpyhvzwwvdmuhts.supabase.co";
-const SUPABASE_KEY = "sb_publishable_eCoQvkELqyJoLnhyBWqx6A_yCP7XGFp";
+const SUPABASE_KEY = "SUA_PUBLISHABLE_KEY";
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -46,23 +46,17 @@ function renderBooks(list) {
 
 async function loadBooks() {
     bookGrid.innerHTML = `
-        <p>Testando conexão com o banco...</p>
+        <p>Carregando catálogo...</p>
     `;
 
     try {
-        if (typeof supabase === "undefined") {
-            throw new Error("A biblioteca do Supabase não foi carregada.");
-        }
-
         const { data, error } = await db
             .from("books")
             .select("*")
             .order("title", { ascending: true });
 
         if (error) {
-            throw new Error(
-                `Supabase: ${error.message} | Código: ${error.code || "sem código"}`
-            );
+            throw error;
         }
 
         books = data || [];
@@ -70,18 +64,13 @@ async function loadBooks() {
         renderBooks(books);
 
     } catch (error) {
-        console.error("ERRO COMPLETO:", error);
+        console.error("Erro ao carregar livros:", error);
 
         bookGrid.innerHTML = `
-            <p><strong>Erro de conexão:</strong></p>
+            <p>Erro ao carregar catálogo.</p>
             <p>${error.message}</p>
         `;
     }
-}
-
-    books = data || [];
-
-    renderBooks(books);
 }
 
 function searchBooks() {
