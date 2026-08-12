@@ -54,15 +54,16 @@ async function loadBooks() {
         .select("*")
         .order("title", { ascending: true });
 
-    if (error) {
-        console.error("Erro ao carregar livros:", error);
+if (error) {
+    console.error("Erro ao carregar livros:", error);
 
-        bookGrid.innerHTML = `
-            <p>Não foi possível carregar o catálogo.</p>
-        `;
+    bookGrid.innerHTML = `
+        <p>Erro ao carregar catálogo:</p>
+        <p>${error.message}</p>
+    `;
 
-        return;
-    }
+    return;
+}
 
     books = data || [];
 
