@@ -24,21 +24,47 @@ function renderBooks(list) {
 
         card.className = "book-card";
 
-        card.innerHTML = `
-            <div class="book-cover">
-                ${
-                    book.cover_url
-                        ? `<img src="${book.cover_url}" alt="Capa de ${book.title}">`
-                        : "📖"
-                }
-            </div>
+       card.innerHTML = `
+    <div class="book-cover">
+        ${
+            book.cover_url
+                ? `<img src="${book.cover_url}" alt="Capa de ${book.title}">`
+                : "📖"
+        }
+    </div>
 
-            <div class="book-info">
-                <h3>${book.title}</h3>
-                <p>${book.author}</p>
-                <p>${book.genre || "Sem gênero informado"}</p>
-            </div>
-        `;
+    <div class="book-info">
+        <h3>${book.title}</h3>
+
+        <p class="book-author">
+            ${book.author}
+        </p>
+
+        <p class="book-genre">
+            ${book.genre || "Sem gênero informado"}
+        </p>
+
+        <div class="book-details">
+            ${
+                book.publication_year
+                    ? `<span>${book.publication_year}</span>`
+                    : ""
+            }
+
+            <span>
+                ${
+                    book.available_copies > 0
+                        ? "Disponível"
+                        : "Indisponível"
+                }
+            </span>
+        </div>
+
+        <p class="book-copies">
+            ${book.available_copies} de ${book.total_copies} exemplar(es) disponível(is)
+        </p>
+    </div>
+`;
 
         bookGrid.appendChild(card);
     });
