@@ -118,3 +118,36 @@ function searchBooks() {
 searchInput.addEventListener("input", searchBooks);
 
 loadBooks();
+
+const loginForm = document.getElementById("loginForm");
+const loginMessage = document.getElementById("loginMessage");
+
+if (loginForm) {
+    loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+
+        loginMessage.textContent = "Entrando...";
+
+        const { data, error } = await db.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) {
+            console.error("Erro no login:", error);
+            loginMessage.textContent = "E-mail ou senha incorretos.";
+            return;
+        }
+
+        loginMessage.textContent = "Login realizado com sucesso!";
+
+        console.log("Usuário conectado:", data.user);
+
+        setTimeout(() => {
+            window.location.href = "#catalogo";
+        }, 1000);
+    });
+}
