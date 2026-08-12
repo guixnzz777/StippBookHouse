@@ -151,3 +151,63 @@ if (loginForm) {
         }, 1000);
     });
 }
+
+
+
+// ==============================
+// PAINEL ADMINISTRATIVO
+// ==============================
+
+const adminPanel = document.getElementById("adminPanel");
+const logoutButton = document.getElementById("logoutButton");
+const showCatalogForm = document.getElementById("showCatalogForm");
+const catalogFormContainer = document.getElementById("catalogFormContainer");
+
+async function checkUser() {
+    const {
+        data: { user }
+    } = await db.auth.getUser();
+
+    if (!user) {
+        return;
+    }
+
+    const { data: profile, error } = await db
+        .from("profiles")
+        .select("full_name, role")
+        .eq("id", user.id)
+        .single();
+
+    if (error) {
+        console.error("Erro ao carregar perfil:", error);
+        return;
+    }
+
+    console.log("Perfil:", profile);
+
+    if (profile.role === "admin") {
+        adminPanel.style.display = "block";
+    }
+}
+
+if (showCatalogForm) {
+    showCatalogForm.addEventListener("click", () => {
+        catalogFormContainer.style.display = "block";
+        showCatalogForm.style.display = "none";
+    });
+}
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", async () => {
+        const { error } = await db.auth.signOut();
+
+        if (error) {
+            console.error("Erro ao sair:", error);
+            return;
+        }
+
+        window.location.reload();
+    });
+}
+
+checkUser();
