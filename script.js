@@ -1,29 +1,13 @@
-```javascript
-const books = [
-    {
-        title: "O Pequeno Príncipe",
-        author: "Antoine de Saint-Exupéry",
-        genre: "Literatura"
-    },
-    {
-        title: "Dom Casmurro",
-        author: "Machado de Assis",
-        genre: "Literatura Brasileira"
-    },
-    {
-        title: "1984",
-        author: "George Orwell",
-        genre: "Ficção"
-    },
-    {
-        title: "O Cortiço",
-        author: "Aluísio Azevedo",
-        genre: "Literatura Brasileira"
-    }
-];
+const SUPABASE_URL = "https://frtgxcpyhvzwwvdmuhts.supabase.co";
+const SUPABASE_KEY = "sb_publishable_eCoQvkELqyJoLnhyBWqx6A_yCP7XGFp";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const bookGrid = document.getElementById("bookGrid");
 const searchInput = document.getElementById("searchInput");
+
+let books = [];
 
 function renderBooks(list) {
     bookGrid.innerHTML = "";
@@ -41,17 +25,48 @@ function renderBooks(list) {
         card.className = "book-card";
 
         card.innerHTML = `
-            <div class="book-cover">📖</div>
+            <div class="book-cover">
+                ${
+                    book.cover_url
+                        ? `<img src="${book.cover_url}" alt="Capa de ${book.title}">`
+                        : "📖"
+                }
+            </div>
 
             <div class="book-info">
                 <h3>${book.title}</h3>
                 <p>${book.author}</p>
-                <p>${book.genre}</p>
+                <p>${book.genre || "Sem gênero informado"}</p>
             </div>
         `;
 
         bookGrid.appendChild(card);
     });
+}
+
+async function loadBooks() {
+    bookGrid.innerHTML = `
+        <p>Carregando catálogo...</p>
+    `;
+
+    const { data, error } = await db
+        .from("books")
+        .select("*")
+        .order("title", { ascending: true });
+
+    if (error) {
+        console.error("Erro ao carregar livros:", error);
+
+        bookGrid.innerHTML = `
+            <p>Não foi possível carregar o catálogo.</p>
+        `;
+
+        return;
+    }
+
+    books = data || [];
+
+    renderBooks(books);
 }
 
 function searchBooks() {
@@ -63,7 +78,7 @@ function searchBooks() {
         return (
             book.title.toLowerCase().includes(query) ||
             book.author.toLowerCase().includes(query) ||
-            book.genre.toLowerCase().includes(query)
+            (book.genre || "").toLowerCase().includes(query)
         );
     });
 
@@ -72,5 +87,4 @@ function searchBooks() {
 
 searchInput.addEventListener("input", searchBooks);
 
-renderBooks(books);
-```
+loadBooks();
