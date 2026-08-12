@@ -107,6 +107,100 @@
     </form>
 </section>
 
+
+<section id="adminPanel" class="admin-section" style="display: none;">
+    <div class="section-heading">
+        <span class="eyebrow">Administração</span>
+        <h2>Painel da biblioteca</h2>
+        <p>Gerencie o acervo do Stipp BookHouse.</p>
+    </div>
+
+    <div class="admin-actions">
+        <button id="showCatalogForm" class="primary-button">
+            + Cadastrar livro
+        </button>
+
+        <button id="logoutButton" class="secondary-button">
+            Sair
+        </button>
+    </div>
+
+    <div id="catalogFormContainer" style="display: none;">
+        <form id="catalogForm" class="catalog-form">
+
+            <input
+                type="text"
+                id="bookTitle"
+                placeholder="Título *"
+                required
+            >
+
+            <input
+                type="text"
+                id="bookAuthor"
+                placeholder="Autor *"
+                required
+            >
+
+            <input
+                type="text"
+                id="bookISBN"
+                placeholder="ISBN"
+            >
+
+            <input
+                type="text"
+                id="bookPublisher"
+                placeholder="Editora"
+            >
+
+            <input
+                type="number"
+                id="bookYear"
+                placeholder="Ano de publicação"
+            >
+
+            <input
+                type="text"
+                id="bookGenre"
+                placeholder="Gênero"
+            >
+
+            <input
+                type="text"
+                id="bookLocation"
+                placeholder="Localização na estante"
+            >
+
+            <input
+                type="url"
+                id="bookCover"
+                placeholder="URL da capa"
+            >
+
+            <textarea
+                id="bookDescription"
+                placeholder="Descrição do livro"
+                rows="5"
+            ></textarea>
+
+            <input
+                type="number"
+                id="bookCopies"
+                placeholder="Quantidade de exemplares"
+                min="1"
+                value="1"
+                required
+            >
+
+            <button type="submit" class="primary-button">
+                Cadastrar livro
+            </button>
+
+            <p id="catalogMessage"></p>
+        </form>
+    </div>
+</section>
             
             <section id="sobre" class="about-section">
                 <div class="section-heading">
