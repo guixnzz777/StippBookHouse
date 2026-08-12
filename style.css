@@ -386,3 +386,204 @@ input {
     text-align: center;
     font-size: 14px;
 }
+
+
+/* ==============================
+   PAINEL ADMINISTRATIVO
+   ============================== */
+
+.admin-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 24px;
+}
+
+.admin-section .section-heading {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+}
+
+.admin-actions button {
+    min-width: 180px;
+}
+
+/* Botão secundário */
+
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 14px 24px;
+
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #222222;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.secondary-button:hover {
+    background: #f5f5f5;
+    border-color: #bdbdbd;
+    transform: translateY(-1px);
+}
+
+/* Formulário de catalogação */
+
+.catalog-form-container {
+    width: 100%;
+}
+
+.catalog-form {
+    max-width: 760px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+
+    padding: 36px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06);
+}
+
+.catalog-form input,
+.catalog-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 15px 16px;
+
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    font-family: inherit;
+    font-size: 15px;
+    color: #222222;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.catalog-form input::placeholder,
+.catalog-form textarea::placeholder {
+    color: #999999;
+}
+
+.catalog-form input:focus,
+.catalog-form textarea:focus {
+    border-color: #222222;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.catalog-form textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+/* Campos que ocupam a largura inteira */
+
+#bookTitle,
+#bookAuthor,
+#bookISBN,
+#bookPublisher,
+#bookLocation,
+#bookCover,
+#bookDescription,
+#catalogMessage {
+    grid-column: 1 / -1;
+}
+
+/* Botão do formulário */
+
+.catalog-form .primary-button {
+    grid-column: 1 / -1;
+
+    width: 100%;
+
+    border: none;
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 15px;
+}
+
+/* Mensagem */
+
+#catalogMessage {
+    min-height: 22px;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+/* Responsividade */
+
+@media (max-width: 700px) {
+
+    .admin-section {
+        padding: 70px 18px;
+    }
+
+    .catalog-form {
+        grid-template-columns: 1fr;
+
+        padding: 24px;
+
+        border-radius: 14px;
+    }
+
+    #bookTitle,
+    #bookAuthor,
+    #bookISBN,
+    #bookPublisher,
+    #bookLocation,
+    #bookCover,
+    #bookDescription,
+    #catalogMessage {
+        grid-column: 1;
+    }
+
+    .admin-actions {
+        flex-direction: column;
+    }
+
+    .admin-actions button {
+        width: 100%;
+        max-width: 360px;
+    }
+}
