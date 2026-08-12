@@ -24,11 +24,12 @@
                 </div>
             </div>
 
-            <nav class="main-nav">
-                <a href="#inicio">Início</a>
-                <a href="#catalogo">Catálogo</a>
-                <a href="#sobre">Sobre</a>
-            </nav>
+<nav class="main-nav">
+    <a href="#inicio">Início</a>
+    <a href="#catalogo">Catálogo</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#login" id="loginButton">Entrar</a>
+</nav>
         </header>
 
         <main>
@@ -75,6 +76,38 @@
                 </div>
             </section>
 
+
+            <section id="login" class="login-section">
+    <div class="section-heading">
+        <span class="eyebrow">Área restrita</span>
+        <h2>Entrar no Stipp BookHouse</h2>
+        <p>Acesse sua conta para utilizar os recursos da biblioteca.</p>
+    </div>
+
+    <form id="loginForm" class="login-form">
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="E-mail"
+            required
+        >
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Senha"
+            required
+        >
+
+        <button type="submit" class="primary-button">
+            Entrar
+        </button>
+
+        <p id="loginMessage"></p>
+    </form>
+</section>
+
+            
             <section id="sobre" class="about-section">
                 <div class="section-heading">
                     <span class="eyebrow">Sobre</span>
