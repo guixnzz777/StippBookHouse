@@ -452,7 +452,11 @@ input {
 /* Formulário de catalogação */
 
 .catalog-form-container {
-    width: 100%;
+    display: none;
+}
+
+.catalog-form-container.active {
+    display: block;
 }
 
 .catalog-form {
