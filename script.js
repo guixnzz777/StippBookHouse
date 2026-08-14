@@ -349,21 +349,19 @@ if (loginForm) {
 // FORMULÁRIO DE CATALOGAÇÃO
 // ==============================
 
-if (showCatalogForm) {
+if (showCatalogForm && catalogFormContainer) {
     showCatalogForm.addEventListener("click", () => {
 
-        catalogFormContainer.classList.add("active");
+        console.log("Botão Catalogar livros clicado");
 
-        showCatalogForm.style.display = "none";
+        catalogFormContainer.classList.toggle("active");
     });
 }
 
-if (closeCatalogForm) {
+if (closeCatalogForm && catalogFormContainer) {
     closeCatalogForm.addEventListener("click", () => {
 
         catalogFormContainer.classList.remove("active");
-
-        showCatalogForm.style.display = "flex";
     });
 }
 
