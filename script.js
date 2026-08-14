@@ -172,12 +172,6 @@ const adminUserName = document.getElementById("adminUserName");
 const logoutButton = document.getElementById("logoutButton");
 const showCatalogForm = document.getElementById("showCatalogForm");
 
-const catalogFormContainer =
-    document.getElementById("catalogFormContainer");
-
-const closeCatalogForm =
-    document.getElementById("closeCatalogForm");
-
 function openSidePanel() {
     sidePanel.classList.add("active");
     sidePanelOverlay.classList.add("active");
@@ -346,24 +340,98 @@ if (loginForm) {
 }
 
 // ==============================
-// FORMULÁRIO DE CATALOGAÇÃO
+// MODAL DE CATALOGAÇÃO
 // ==============================
 
-if (showCatalogForm && catalogFormContainer) {
-    showCatalogForm.addEventListener("click", () => {
+const catalogModal =
+    document.getElementById("catalogModal");
 
-        console.log("Botão Catalogar livros clicado");
+const closeCatalogModal =
+    document.getElementById("closeCatalogModal");
 
-        catalogFormContainer.classList.toggle("active");
-    });
+const cancelCatalogModal =
+    document.getElementById("cancelCatalogModal");
+
+const catalogModalOverlay =
+    document.querySelector(".catalog-modal-overlay");
+
+
+function openCatalogModal() {
+
+    if (!catalogModal) return;
+
+    catalogModal.classList.add("active");
+
+    document.body.classList.add("modal-open");
 }
 
-if (closeCatalogForm && catalogFormContainer) {
-    closeCatalogForm.addEventListener("click", () => {
 
-        catalogFormContainer.classList.remove("active");
-    });
+function closeCatalogModalFunction() {
+
+    if (!catalogModal) return;
+
+    catalogModal.classList.remove("active");
+
+    document.body.classList.remove("modal-open");
 }
+
+
+if (showCatalogForm) {
+
+    showCatalogForm.addEventListener(
+        "click",
+        openCatalogModal
+    );
+
+}
+
+
+if (closeCatalogModal) {
+
+    closeCatalogModal.addEventListener(
+        "click",
+        closeCatalogModalFunction
+    );
+
+}
+
+
+if (cancelCatalogModal) {
+
+    cancelCatalogModal.addEventListener(
+        "click",
+        closeCatalogModalFunction
+    );
+
+}
+
+
+if (catalogModalOverlay) {
+
+    catalogModalOverlay.addEventListener(
+        "click",
+        closeCatalogModalFunction
+    );
+
+}
+
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            catalogModal &&
+            catalogModal.classList.contains("active")
+        ) {
+
+            closeCatalogModalFunction();
+
+        }
+
+    }
+);
 
 // ==============================
 // LOGOUT
