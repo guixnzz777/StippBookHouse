@@ -651,79 +651,197 @@ const catalogForm = document.getElementById("catalogForm");
 const catalogMessage = document.getElementById("catalogMessage");
 
 if (catalogForm) {
+
     catalogForm.addEventListener("submit", async (event) => {
+
         event.preventDefault();
 
         catalogMessage.textContent = "Cadastrando livro...";
-
-        const title = document.getElementById("bookTitle").value.trim();
-        const author = document.getElementById("bookAuthor").value.trim();
-        const isbn = document.getElementById("bookISBN").value.trim();
-        const publisher = document.getElementById("bookPublisher").value.trim();
-        const year = document.getElementById("bookYear").value;
-        const genre = document.getElementById("bookGenre").value.trim();
-        const category = document.getElementById("bookCategory").value.trim();
-        const location = document.getElementById("bookLocation").value.trim();
-        const cover = document.getElementById("bookCover").value.trim();
-        const description = document.getElementById("bookDescription").value.trim();
-        const copies = Number(document.getElementById("bookCopies").value);
-
-        const bookData = {
-            title: title,
-            author: author,
-            isbn: isbn || null,
-            publisher: publisher || null,
-            publication_year: year ? Number(year) : null,
-            genre: genre || null,
-            description: description || null,
-            cover_url: cover || null,
-            shelf_location: location || null,
-            total_copies: copies,
-            available_copies: copies,
-            status: "available"
-        };
+        catalogMessage.style.color = "";
 
         try {
+
+            // Verificar usuário logado
+            const {
+                data: { user },
+                error: userError
+            } = await db.auth.getUser();
+
+            if (userError) {
+                throw userError;
+            }
+
+            if (!user) {
+                throw new Error("Nenhum usuário está autenticado.");
+            }
+
+            // Verificar perfil
+            const { data: profile, error: profileError } = await db
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .single();
+
+            if (profileError) {
+                throw profileError;
+            }
+
+            if (!profile || profile.role !== "admin") {
+                throw new Error(
+                    "Este usuário não possui permissão de administrador."
+                );
+            }
+
+            // Pegar dados do formulário
+            const title =
+                document.getElementById("bookTitle").value.trim();
+
+            const author =
+                document.getElementById("bookAuthor").value.trim();
+
+            const isbn =
+                document.getElementById("bookISBN").value.trim();
+
+            const publisher =
+                document.getElementById("bookPublisher").value.trim();
+
+            const year =
+                document.getElementById("bookYear").value;
+
+            const genre =
+                document.getElementById("bookGenre").value.trim();
+
+            const location =
+                document.getElementById("bookLocation").value.trim();
+
+            const cover =
+                document.getElementById("bookCover").value.trim();
+
+            const description =
+                document.getElementById("bookDescription").value.trim();
+
+            const copies =
+                Number(document.getElementById("bookCopies").value);
+
+            // Validar dados principais
+            if (!title || !author) {
+                throw new Error(
+                    "Título e autor são obrigatórios."
+                );
+            }
+
+            if (!copies || copies < 1) {
+                throw new Error(
+                    "A quantidade de exemplares deve ser pelo menos 1."
+                );
+            }
+
+            // Montar objeto
+            const bookData = {
+
+                title: title,
+
+                author: author,
+
+                isbn: isbn || null,
+
+                publisher: publisher || null,
+
+                publication_year:
+                    year ? Number(year) : null,
+
+                genre:
+                    genre || null,
+
+                description:
+                    description || null,
+
+                cover_url:
+                    cover || null,
+
+                shelf_location:
+                    location || null,
+
+                total_copies:
+                    copies,
+
+                available_copies:
+                    copies,
+
+                status:
+                    "available"
+            };
+
+            console.log(
+                "Tentando cadastrar:",
+                bookData
+            );
+
+            // Inserir no Supabase
             const { data, error } = await db
                 .from("books")
-                .insert([bookData])
+                .insert(bookData)
                 .select()
                 .single();
 
             if (error) {
-                throw error;
+
+                console.error(
+                    "ERRO DO SUPABASE:",
+                    error
+                );
+
+                throw new Error(
+                    `${error.message} | Código: ${error.code || "sem código"}`
+                );
             }
 
-            console.log("Livro cadastrado:", data);
+            console.log(
+                "Livro cadastrado com sucesso:",
+                data
+            );
 
             catalogMessage.textContent =
                 "Livro cadastrado com sucesso!";
 
-            catalogMessage.style.color = "#315c4c";
+            catalogMessage.style.color =
+                "#315c4c";
 
             catalogForm.reset();
 
-            document.getElementById("bookCopies").value = 1;
+            document.getElementById(
+                "bookCopies"
+            ).value = 1;
 
+            // Atualizar catálogo
             await loadBooks();
 
+            // Fechar modal
             setTimeout(() => {
+
                 closeCatalogModalFunction();
+
                 catalogMessage.textContent = "";
+
             }, 1200);
 
         } catch (error) {
 
-            console.error("Erro ao cadastrar livro:", error);
+            console.error(
+                "ERRO COMPLETO AO CADASTRAR:",
+                error
+            );
 
             catalogMessage.textContent =
+                error.message ||
                 "Não foi possível cadastrar o livro.";
 
-            catalogMessage.style.color = "#a33";
-
-            console.error("Detalhes:", error.message);
+            catalogMessage.style.color =
+                "#a33";
         }
+
     });
+
 }
 
 
