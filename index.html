@@ -5,10 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="description"
-        content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen"
-    >
+    <meta name="description" content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen">
 
     <meta name="theme-color" content="#315c4c">
 
@@ -16,6 +13,54 @@
 
     <link rel="stylesheet" href="style.css">
 </head>
+
+<!-- =========================================================
+     MODAL DO LEITOR ISBN
+========================================================= -->
+
+<div id="isbnScannerModal" class="isbn-scanner-modal">
+
+    <div class="isbn-scanner-overlay"></div>
+
+    <div class="isbn-scanner-content">
+
+        <div class="isbn-scanner-header">
+
+            <h2>
+                Ler código ISBN
+            </h2>
+
+            <button type="button" id="closeISBNScanner" class="close-isbn-scanner">
+                ×
+            </button>
+
+        </div>
+
+
+        <p class="isbn-scanner-instruction">
+
+            Aponte a câmera para o código de barras
+            localizado na parte de trás do livro.
+
+        </p>
+
+
+        <div id="isbnScanner" class="isbn-scanner"></div>
+
+
+        <p id="isbnScannerMessage" class="isbn-scanner-message">
+            Aguardando código...
+
+        </p>
+
+
+        <button type="button" id="cancelISBNScanner" class="cancel-isbn-scanner">
+            Cancelar
+        </button>
+
+    </div>
+
+</div>
 
 <body>
 
@@ -54,11 +99,7 @@
                     Sobre
                 </a>
 
-                <button
-                    id="loginButton"
-                    class="nav-login-button"
-                    type="button"
-                >
+                <button id="loginButton" class="nav-login-button" type="button">
                     Entrar
                 </button>
 
@@ -96,10 +137,7 @@
                         próxima leitura.
                     </p>
 
-                    <a
-                        href="#catalogo"
-                        class="primary-button"
-                    >
+                    <a href="#catalogo" class="primary-button">
                         Explorar catálogo
                     </a>
 
@@ -112,10 +150,7 @@
                  CATÁLOGO
             ================================================== -->
 
-            <section
-                id="catalogo"
-                class="catalog-section"
-            >
+            <section id="catalogo" class="catalog-section">
 
                 <div class="section-heading">
 
@@ -137,29 +172,17 @@
 
                 <div class="catalog-search">
 
-                    <label
-                        class="visually-hidden"
-                        for="searchInput"
-                    >
+                    <label class="visually-hidden" for="searchInput">
                         Pesquisar no catálogo
                     </label>
 
-                    <input
-                        type="search"
-                        id="searchInput"
-                        placeholder="Pesquisar livro, autor ou gênero..."
-                        autocomplete="off"
-                        aria-label="Pesquisar livro, autor ou gênero"
-                    >
+                    <input type="search" id="searchInput" placeholder="Pesquisar livro, autor ou gênero..."
+                        autocomplete="off" aria-label="Pesquisar livro, autor ou gênero">
 
                 </div>
 
 
-                <div
-                    id="bookGrid"
-                    class="book-grid"
-                    aria-live="polite"
-                >
+                <div id="bookGrid" class="book-grid" aria-live="polite">
                     <!-- Livros carregados pelo JavaScript -->
                 </div>
 
@@ -170,10 +193,7 @@
                  SOBRE
             ================================================== -->
 
-            <section
-                id="sobre"
-                class="about-section"
-            >
+            <section id="sobre" class="about-section">
 
                 <div class="section-heading">
 
@@ -201,19 +221,10 @@
              PAINEL LATERAL
         ================================================== -->
 
-        <div
-            id="sidePanelOverlay"
-            class="side-panel-overlay"
-            aria-hidden="true"
-        ></div>
+        <div id="sidePanelOverlay" class="side-panel-overlay" aria-hidden="true"></div>
 
 
-        <aside
-            id="sidePanel"
-            class="side-panel"
-            aria-label="Área da conta"
-            aria-hidden="true"
-        >
+        <aside id="sidePanel" class="side-panel" aria-label="Área da conta" aria-hidden="true">
 
             <div class="side-panel-header">
 
@@ -229,12 +240,7 @@
 
                 </div>
 
-                <button
-                    id="closeSidePanel"
-                    class="close-side-panel"
-                    type="button"
-                    aria-label="Fechar painel"
-                >
+                <button id="closeSidePanel" class="close-side-panel" type="button" aria-label="Fechar painel">
                     ×
                 </button>
 
@@ -253,51 +259,29 @@
                 </p>
 
 
-                <form
-                    id="loginForm"
-                    class="login-form"
-                >
+                <form id="loginForm" class="login-form">
 
                     <label for="loginEmail">
                         E-mail
                     </label>
 
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="seu@email.com"
-                        autocomplete="email"
-                        required
-                    >
+                    <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email" required>
 
 
                     <label for="loginPassword">
                         Senha
                     </label>
 
-                    <input
-                        type="password"
-                        id="loginPassword"
-                        placeholder="Sua senha"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input type="password" id="loginPassword" placeholder="Sua senha" autocomplete="current-password"
+                        required>
 
 
-                    <button
-                        type="submit"
-                        class="primary-button"
-                        id="loginSubmitButton"
-                    >
+                    <button type="submit" class="primary-button" id="loginSubmitButton">
                         Entrar
                     </button>
 
 
-                    <p
-                        id="loginMessage"
-                        role="status"
-                        aria-live="polite"
-                    ></p>
+                    <p id="loginMessage" role="status" aria-live="polite"></p>
 
                 </form>
 
@@ -308,10 +292,7 @@
                  PAINEL ADMINISTRATIVO
             ================================================== -->
 
-            <div
-                id="adminPanel"
-                class="admin-panel"
-            >
+            <div id="adminPanel" class="admin-panel">
 
                 <div class="admin-welcome">
 
@@ -332,11 +313,7 @@
 
                 <div class="admin-menu">
 
-                    <button
-                        id="showCatalogForm"
-                        class="admin-menu-button"
-                        type="button"
-                    >
+                    <button id="showCatalogForm" class="admin-menu-button" type="button">
 
                         <span aria-hidden="true">
                             📚
@@ -359,11 +336,7 @@
                 </div>
 
 
-                <button
-                    id="logoutButton"
-                    class="secondary-button logout-button"
-                    type="button"
-                >
+                <button id="logoutButton" class="secondary-button logout-button" type="button">
                     Sair da conta
                 </button>
 
@@ -376,14 +349,8 @@
              MODAL DE DETALHES DO LIVRO
         ================================================== -->
 
-        <div
-            id="bookDetailsModal"
-            class="book-details-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="detailsBookTitle"
-            aria-hidden="true"
-        >
+        <div id="bookDetailsModal" class="book-details-modal" role="dialog" aria-modal="true"
+            aria-labelledby="detailsBookTitle" aria-hidden="true">
 
             <div class="book-details-overlay"></div>
 
@@ -403,12 +370,8 @@
 
                     </div>
 
-                    <button
-                        type="button"
-                        id="closeBookDetailsModal"
-                        class="close-book-details"
-                        aria-label="Fechar detalhes do livro"
-                    >
+                    <button type="button" id="closeBookDetailsModal" class="close-book-details"
+                        aria-label="Fechar detalhes do livro">
                         ×
                     </button>
 
@@ -419,17 +382,9 @@
 
                     <div class="book-details-cover">
 
-                        <img
-                            id="detailsBookCover"
-                            src=""
-                            alt=""
-                            style="display: none;"
-                        >
+                        <img id="detailsBookCover" src="" alt="" style="display: none;">
 
-                        <div
-                            id="detailsBookCoverPlaceholder"
-                            class="book-details-cover-placeholder"
-                        >
+                        <div id="detailsBookCoverPlaceholder" class="book-details-cover-placeholder">
                             📖
                         </div>
 
@@ -508,25 +463,13 @@
 
                 <!-- AÇÕES DO ADMINISTRADOR -->
 
-                <div
-                    id="bookAdminActions"
-                    class="book-admin-actions"
-                    style="display: none;"
-                >
+                <div id="bookAdminActions" class="book-admin-actions" style="display: none;">
 
-                    <button
-                        type="button"
-                        id="editBookButton"
-                        class="edit-book-button"
-                    >
+                    <button type="button" id="editBookButton" class="edit-book-button">
                         ✏️ Editar livro
                     </button>
 
-                    <button
-                        type="button"
-                        id="deleteBookButton"
-                        class="delete-book-button"
-                    >
+                    <button type="button" id="deleteBookButton" class="delete-book-button">
                         🗑️ Excluir livro
                     </button>
 
@@ -541,14 +484,8 @@
              MODAL DE CATALOGAÇÃO
         ================================================== -->
 
-        <div
-            id="catalogModal"
-            class="catalog-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="catalogModalTitle"
-            aria-hidden="true"
-        >
+        <div id="catalogModal" class="catalog-modal" role="dialog" aria-modal="true" aria-labelledby="catalogModalTitle"
+            aria-hidden="true">
 
             <div class="catalog-modal-overlay"></div>
 
@@ -570,12 +507,8 @@
                     </div>
 
 
-                    <button
-                        type="button"
-                        id="closeCatalogModal"
-                        class="close-catalog-modal"
-                        aria-label="Fechar formulário"
-                    >
+                    <button type="button" id="closeCatalogModal" class="close-catalog-modal"
+                        aria-label="Fechar formulário">
                         ×
                     </button>
 
@@ -586,10 +519,7 @@
                      FORMULÁRIO DE CATALOGAÇÃO
                 ================================================== -->
 
-                <form
-                    id="catalogForm"
-                    class="catalog-form"
-                >
+                <form id="catalogForm" class="catalog-form">
 
                     <!-- TÍTULO -->
 
@@ -599,13 +529,7 @@
                             Título *
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookTitle"
-                            placeholder="Título do livro"
-                            autocomplete="off"
-                            required
-                        >
+                        <input type="text" id="bookTitle" placeholder="Título do livro" autocomplete="off" required>
 
                     </div>
 
@@ -618,13 +542,7 @@
                             Autor *
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookAuthor"
-                            placeholder="Nome do autor"
-                            autocomplete="off"
-                            required
-                        >
+                        <input type="text" id="bookAuthor" placeholder="Nome do autor" autocomplete="off" required>
 
                     </div>
 
@@ -637,13 +555,7 @@
                             Tombo *
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookAssetNumber"
-                            placeholder="Ex.: 000123"
-                            autocomplete="off"
-                            required
-                        >
+                        <input type="text" id="bookAssetNumber" placeholder="Ex.: 000123" autocomplete="off" required>
 
                     </div>
 
@@ -656,13 +568,19 @@
                             ISBN
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookISBN"
-                            placeholder="Ex.: 978-..."
-                            autocomplete="off"
-                        >
+                        <div class="isbn-field">
 
+                            <div class="isbn-input-row">
+
+                                <input type="text" id="bookISBN" placeholder="ISBN">
+
+                                <button type="button" id="scanISBNButton" class="scan-isbn-button">
+                                    📷 Ler ISBN
+                                </button>
+
+                            </div>
+
+                        </div>
                     </div>
 
 
@@ -674,12 +592,7 @@
                             Editora
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookPublisher"
-                            placeholder="Nome da editora"
-                            autocomplete="off"
-                        >
+                        <input type="text" id="bookPublisher" placeholder="Nome da editora" autocomplete="off">
 
                     </div>
 
@@ -692,14 +605,8 @@
                             Ano de publicação
                         </label>
 
-                        <input
-                            type="number"
-                            id="bookYear"
-                            placeholder="Ex.: 2024"
-                            min="0"
-                            max="2100"
-                            inputmode="numeric"
-                        >
+                        <input type="number" id="bookYear" placeholder="Ex.: 2024" min="0" max="2100"
+                            inputmode="numeric">
 
                     </div>
 
@@ -712,12 +619,7 @@
                             Gênero
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookGenre"
-                            placeholder="Ex.: Romance"
-                            autocomplete="off"
-                        >
+                        <input type="text" id="bookGenre" placeholder="Ex.: Romance" autocomplete="off">
 
                     </div>
 
@@ -749,12 +651,8 @@
                             Localização na estante
                         </label>
 
-                        <input
-                            type="text"
-                            id="bookLocation"
-                            placeholder="Ex.: Estante A — Prateleira 2"
-                            autocomplete="off"
-                        >
+                        <input type="text" id="bookLocation" placeholder="Ex.: Estante A — Prateleira 2"
+                            autocomplete="off">
 
                     </div>
 
@@ -767,12 +665,7 @@
                             URL da capa
                         </label>
 
-                        <input
-                            type="url"
-                            id="bookCover"
-                            placeholder="https://..."
-                            autocomplete="off"
-                        >
+                        <input type="url" id="bookCover" placeholder="https://..." autocomplete="off">
 
                     </div>
 
@@ -785,11 +678,7 @@
                             Descrição
                         </label>
 
-                        <textarea
-                            id="bookDescription"
-                            placeholder="Descrição do livro..."
-                            rows="4"
-                        ></textarea>
+                        <textarea id="bookDescription" placeholder="Descrição do livro..." rows="4"></textarea>
 
                     </div>
 
@@ -802,15 +691,7 @@
                             Exemplares *
                         </label>
 
-                        <input
-                            type="number"
-                            id="bookCopies"
-                            value="1"
-                            min="1"
-                            step="1"
-                            inputmode="numeric"
-                            required
-                        >
+                        <input type="number" id="bookCopies" value="1" min="1" step="1" inputmode="numeric" required>
 
                     </div>
 
@@ -819,31 +700,19 @@
 
                     <div class="catalog-form-actions">
 
-                        <button
-                            type="button"
-                            id="cancelCatalogModal"
-                            class="secondary-button"
-                        >
+                        <button type="button" id="cancelCatalogModal" class="secondary-button">
                             Cancelar
                         </button>
 
 
-                        <button
-                            type="submit"
-                            id="catalogSubmitButton"
-                            class="primary-button"
-                        >
+                        <button type="submit" id="catalogSubmitButton" class="primary-button">
                             Cadastrar livro
                         </button>
 
                     </div>
 
 
-                    <p
-                        id="catalogMessage"
-                        role="status"
-                        aria-live="polite"
-                    ></p>
+                    <p id="catalogMessage" role="status" aria-live="polite"></p>
 
                 </form>
 
@@ -880,6 +749,8 @@
     <!-- ==================================================
          JAVASCRIPT DO SITE
     ================================================== -->
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <script src="script.js"></script>
 

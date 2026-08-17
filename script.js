@@ -80,6 +80,250 @@ const closeSidePanel =
 const loginSubmitButton =
     document.getElementById("loginSubmitButton");
 
+/* =========================================================
+   LEITOR DE ISBN
+========================================================= */
+
+const scanISBNButton =
+    document.getElementById("scanISBNButton");
+
+const isbnScannerModal =
+    document.getElementById("isbnScannerModal");
+
+const closeISBNScanner =
+    document.getElementById("closeISBNScanner");
+
+const cancelISBNScanner =
+    document.getElementById("cancelISBNScanner");
+
+const isbnScannerMessage =
+    document.getElementById("isbnScannerMessage");
+
+
+let isbnScannerInstance = null;
+
+let isbnScannerRunning = false;
+
+
+/* =========================================================
+   ABRIR LEITOR
+========================================================= */
+
+async function openISBNScanner() {
+
+    isbnScannerModal.classList.add(
+        "active"
+    );
+
+    isbnScannerMessage.textContent =
+        "Aponte a câmera para o código de barras...";
+
+
+    isbnScannerInstance =
+        new Html5Qrcode("isbnScanner");
+
+
+    try {
+
+        await isbnScannerInstance.start(
+
+            {
+                facingMode: "environment"
+            },
+
+            {
+
+                fps: 10,
+
+                qrbox: {
+                    width: 280,
+                    height: 120
+                },
+
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.EAN_13
+                ]
+
+            },
+
+            (decodedText) => {
+
+                /* =========================================
+                   ISBN ENCONTRADO
+                ========================================= */
+
+                const isbnInput =
+                    document.getElementById(
+                        "bookISBN"
+                    );
+
+
+                isbnInput.value =
+                    decodedText;
+
+
+                isbnScannerMessage.textContent =
+                    "ISBN identificado!";
+
+
+                stopISBNScanner();
+
+
+                setTimeout(() => {
+
+                    closeISBNScannerModal();
+
+                }, 400);
+
+            },
+
+            () => {
+
+                /*
+                   Erros de leitura são ignorados.
+                   O scanner continua procurando.
+                */
+
+            }
+
+        );
+
+
+        isbnScannerRunning = true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao iniciar câmera:",
+            error
+        );
+
+
+        isbnScannerMessage.textContent =
+            "Não foi possível acessar a câmera.";
+
+
+        alert(
+            "Não foi possível acessar a câmera. " +
+            "Verifique se o navegador possui permissão para utilizá-la."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PARAR LEITOR
+========================================================= */
+
+async function stopISBNScanner() {
+
+    if (
+        !isbnScannerInstance ||
+        !isbnScannerRunning
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await isbnScannerInstance.stop();
+
+        isbnScannerInstance.clear();
+
+        isbnScannerRunning = false;
+
+        isbnScannerInstance = null;
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao parar leitor:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   FECHAR MODAL
+========================================================= */
+
+async function closeISBNScannerModal() {
+
+    await stopISBNScanner();
+
+    isbnScannerModal.classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   BOTÃO ABRIR
+========================================================= */
+
+scanISBNButton.addEventListener(
+    "click",
+    openISBNScanner
+);
+
+
+/* =========================================================
+   BOTÕES FECHAR
+========================================================= */
+
+closeISBNScanner.addEventListener(
+    "click",
+    closeISBNScannerModal
+);
+
+
+cancelISBNScanner.addEventListener(
+    "click",
+    closeISBNScannerModal
+);
+
+
+/* =========================================================
+   CLICAR FORA DO MODAL
+========================================================= */
+
+isbnScannerModal
+    .querySelector(".isbn-scanner-overlay")
+    .addEventListener(
+        "click",
+        closeISBNScannerModal
+    );
+
+
+/* =========================================================
+   ESC
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            isbnScannerModal.classList.contains(
+                "active"
+            )
+        ) {
+
+            closeISBNScannerModal();
+
+        }
+
+    }
+);
 
 /* =========================================================
    MODAL DE CATALOGAÇÃO

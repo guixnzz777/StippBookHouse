@@ -2075,3 +2075,160 @@ img {
     }
 
 }
+
+/* =========================================================
+   LEITOR ISBN
+========================================================= */
+
+.isbn-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+
+.isbn-input-row input {
+    flex: 1;
+}
+
+
+.scan-isbn-button {
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.isbn-scanner-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+
+.isbn-scanner-modal.active {
+    display: flex;
+}
+
+
+.isbn-scanner-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.75);
+}
+
+
+.isbn-scanner-content {
+    position: relative;
+
+    width: min(500px, 100%);
+
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.3);
+
+    z-index: 1;
+}
+
+
+.isbn-scanner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+
+.isbn-scanner-header h2 {
+    margin: 0;
+}
+
+
+.close-isbn-scanner {
+    border: none;
+    background: none;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+    line-height: 1;
+}
+
+
+.isbn-scanner-instruction {
+    margin-bottom: 18px;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+.isbn-scanner {
+    width: 100%;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    background: #111;
+}
+
+
+/*
+   Impede que o leitor crie elementos
+   gigantes dentro do modal.
+*/
+
+.isbn-scanner video {
+    width: 100% !important;
+
+    height: auto !important;
+
+    border-radius: 12px;
+}
+
+
+.isbn-scanner-message {
+    text-align: center;
+
+    margin: 15px 0;
+
+    font-size: 14px;
+}
+
+
+.cancel-isbn-scanner {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 12px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
