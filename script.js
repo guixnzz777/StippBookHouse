@@ -80,7 +80,7 @@ const closeSidePanel =
 const loginSubmitButton =
     document.getElementById("loginSubmitButton");
 
-/* =========================================================
+/* ========================================================
    LEITOR DE ISBN
 ========================================================= */
 
