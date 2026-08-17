@@ -30,6 +30,259 @@ const searchInput =
 let books = [];
 
 
+/* ==============================
+   MODAL DE DETALHES DO LIVRO
+============================== */
+
+const bookDetailsModal =
+    document.getElementById("bookDetailsModal");
+
+const bookDetailsOverlay =
+    document.querySelector(".book-details-overlay");
+
+const closeBookDetailsModal =
+    document.getElementById("closeBookDetailsModal");
+
+
+const detailsBookTitle =
+    document.getElementById("detailsBookTitle");
+
+const detailsBookCover =
+    document.getElementById("detailsBookCover");
+
+const detailsBookCoverPlaceholder =
+    document.getElementById("detailsBookCoverPlaceholder");
+
+const detailsBookAuthor =
+    document.getElementById("detailsBookAuthor");
+
+const detailsBookAssetNumber =
+    document.getElementById("detailsBookAssetNumber");
+
+const detailsBookISBN =
+    document.getElementById("detailsBookISBN");
+
+const detailsBookPublisher =
+    document.getElementById("detailsBookPublisher");
+
+const detailsBookYear =
+    document.getElementById("detailsBookYear");
+
+const detailsBookGenre =
+    document.getElementById("detailsBookGenre");
+
+const detailsBookCategory =
+    document.getElementById("detailsBookCategory");
+
+const detailsBookLocation =
+    document.getElementById("detailsBookLocation");
+
+const detailsBookCopies =
+    document.getElementById("detailsBookCopies");
+
+const detailsBookStatus =
+    document.getElementById("detailsBookStatus");
+
+const detailsBookDescription =
+    document.getElementById("detailsBookDescription");
+
+
+function openBookDetails(book) {
+
+    if (!bookDetailsModal) return;
+
+
+    /* Título */
+
+    detailsBookTitle.textContent =
+        book.title || "Livro sem título";
+
+
+    /* Autor */
+
+    detailsBookAuthor.textContent =
+        book.author || "Não informado";
+
+
+    /* Tombo */
+
+    detailsBookAssetNumber.textContent =
+        book.asset_number || "Não informado";
+
+
+    /* ISBN */
+
+    detailsBookISBN.textContent =
+        book.isbn || "Não informado";
+
+
+    /* Editora */
+
+    detailsBookPublisher.textContent =
+        book.publisher || "Não informado";
+
+
+    /* Ano */
+
+    detailsBookYear.textContent =
+        book.publication_year || "Não informado";
+
+
+    /* Gênero */
+
+    detailsBookGenre.textContent =
+        book.genre || "Não informado";
+
+
+    /* Categoria */
+
+    detailsBookCategory.textContent =
+        book.category || "Não informado";
+
+
+    /* Localização */
+
+    detailsBookLocation.textContent =
+        book.shelf_location || "Não informado";
+
+
+    /* Exemplares */
+
+    const totalCopies =
+        book.total_copies ?? 0;
+
+    const availableCopies =
+        book.available_copies ?? 0;
+
+    detailsBookCopies.textContent =
+        `${availableCopies} de ${totalCopies} disponível(is)`;
+
+
+    /* Status */
+
+    if (availableCopies > 0) {
+
+        detailsBookStatus.textContent =
+            "Disponível";
+
+    } else {
+
+        detailsBookStatus.textContent =
+            "Indisponível";
+
+    }
+
+
+    /* Descrição */
+
+    detailsBookDescription.textContent =
+        book.description ||
+        "Nenhuma descrição informada.";
+
+
+    /* Capa */
+
+    if (book.cover_url) {
+
+        detailsBookCover.src =
+            book.cover_url;
+
+        detailsBookCover.alt =
+            `Capa de ${book.title}`;
+
+        detailsBookCover.style.display =
+            "block";
+
+        detailsBookCoverPlaceholder.style.display =
+            "none";
+
+    } else {
+
+        detailsBookCover.src = "";
+
+        detailsBookCover.style.display =
+            "none";
+
+        detailsBookCoverPlaceholder.style.display =
+            "grid";
+
+    }
+
+
+    /* Abrir modal */
+
+    bookDetailsModal.classList.add(
+        "active"
+    );
+
+    document.body.classList.add(
+        "modal-open"
+    );
+
+}
+
+
+/* ==============================
+   FECHAR MODAL
+============================== */
+
+function closeBookDetailsModalFunction() {
+
+    if (!bookDetailsModal) return;
+
+    bookDetailsModal.classList.remove(
+        "active"
+    );
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+}
+
+
+if (closeBookDetailsModal) {
+
+    closeBookDetailsModal.addEventListener(
+        "click",
+        closeBookDetailsModalFunction
+    );
+
+}
+
+
+if (bookDetailsOverlay) {
+
+    bookDetailsOverlay.addEventListener(
+        "click",
+        closeBookDetailsModalFunction
+    );
+
+}
+
+
+/* ==============================
+   ESC
+============================== */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            bookDetailsModal &&
+            bookDetailsModal.classList.contains("active")
+        ) {
+
+            closeBookDetailsModalFunction();
+
+        }
+
+    }
+);
+
+
 /* ==================================================
    RENDERIZAR LIVROS
 ================================================== */
@@ -52,11 +305,19 @@ function renderBooks(list) {
     list.forEach((book) => {
 
         const card =
-            document.createElement("article");
+    document.createElement("article");
 
-        card.className =
-            "book-card";
+card.className =
+    "book-card";
 
+card.style.cursor = "pointer";
+
+card.addEventListener(
+    "click",
+    () => {
+        openBookDetails(book);
+    }
+);
 
         card.innerHTML = `
 
