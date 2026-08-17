@@ -642,6 +642,91 @@ catalogModalOverlay.addEventListener(
 );
 
 
+
+// ==============================
+// CADASTRO DE LIVROS
+// ==============================
+
+const catalogForm = document.getElementById("catalogForm");
+const catalogMessage = document.getElementById("catalogMessage");
+
+if (catalogForm) {
+    catalogForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        catalogMessage.textContent = "Cadastrando livro...";
+
+        const title = document.getElementById("bookTitle").value.trim();
+        const author = document.getElementById("bookAuthor").value.trim();
+        const isbn = document.getElementById("bookISBN").value.trim();
+        const publisher = document.getElementById("bookPublisher").value.trim();
+        const year = document.getElementById("bookYear").value;
+        const genre = document.getElementById("bookGenre").value.trim();
+        const category = document.getElementById("bookCategory").value.trim();
+        const location = document.getElementById("bookLocation").value.trim();
+        const cover = document.getElementById("bookCover").value.trim();
+        const description = document.getElementById("bookDescription").value.trim();
+        const copies = Number(document.getElementById("bookCopies").value);
+
+        const bookData = {
+            title: title,
+            author: author,
+            isbn: isbn || null,
+            publisher: publisher || null,
+            publication_year: year ? Number(year) : null,
+            genre: genre || null,
+            description: description || null,
+            cover_url: cover || null,
+            shelf_location: location || null,
+            total_copies: copies,
+            available_copies: copies,
+            status: "available"
+        };
+
+        try {
+            const { data, error } = await db
+                .from("books")
+                .insert([bookData])
+                .select()
+                .single();
+
+            if (error) {
+                throw error;
+            }
+
+            console.log("Livro cadastrado:", data);
+
+            catalogMessage.textContent =
+                "Livro cadastrado com sucesso!";
+
+            catalogMessage.style.color = "#315c4c";
+
+            catalogForm.reset();
+
+            document.getElementById("bookCopies").value = 1;
+
+            await loadBooks();
+
+            setTimeout(() => {
+                closeCatalogModalFunction();
+                catalogMessage.textContent = "";
+            }, 1200);
+
+        } catch (error) {
+
+            console.error("Erro ao cadastrar livro:", error);
+
+            catalogMessage.textContent =
+                "Não foi possível cadastrar o livro.";
+
+            catalogMessage.style.color = "#a33";
+
+            console.error("Detalhes:", error.message);
+        }
+    });
+}
+
+
 /* ==============================
    ESC FECHA O MODAL / PAINEL
 ============================== */
