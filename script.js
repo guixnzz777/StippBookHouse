@@ -535,10 +535,12 @@ async function checkUser() {
         return;
     }
 
+console.log("PERFIL DO USUÁRIO:", profile);
+console.log("ROLE:", profile.role);
 
-    if (
-        profile.role === "admin"
-    ) {
+if (
+    profile.role === "admin"
+) {
 
         currentUserIsAdmin = true;
 
