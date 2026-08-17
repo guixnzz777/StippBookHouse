@@ -169,8 +169,8 @@ async function fetchBookByISBN(isbn) {
         }
 
 
-        const url =
-            `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&maxResults=1`;
+       const url =
+    `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}`;
 
 
         const response =
@@ -593,56 +593,60 @@ async function closeISBNScannerModal() {
 
 
 /* =========================================================
-   BOTÃO ABRIR
+   EVENTOS DO LEITOR DE ISBN
 ========================================================= */
 
-scanISBNButton.addEventListener(
-    "click",
-    openISBNScanner
-);
+if (scanISBNButton) {
+    scanISBNButton.addEventListener(
+        "click",
+        openISBNScanner
+    );
+}
 
-
-/* =========================================================
-   BOTÕES FECHAR
-========================================================= */
-
-closeISBNScanner.addEventListener(
-    "click",
-    closeISBNScannerModal
-);
-
-
-cancelISBNScanner.addEventListener(
-    "click",
-    closeISBNScannerModal
-);
-
-
-/* =========================================================
-   CLICAR FORA DO MODAL
-========================================================= */
-
-isbnScannerModal
-    .querySelector(".isbn-scanner-overlay")
-    .addEventListener(
+if (closeISBNScanner) {
+    closeISBNScanner.addEventListener(
         "click",
         closeISBNScannerModal
     );
+}
+
+if (cancelISBNScanner) {
+    cancelISBNScanner.addEventListener(
+        "click",
+        closeISBNScannerModal
+    );
+}
+
+if (isbnScannerModal) {
+
+    const scannerOverlay =
+        isbnScannerModal.querySelector(
+            ".isbn-scanner-overlay"
+        );
+
+    if (scannerOverlay) {
+
+        scannerOverlay.addEventListener(
+            "click",
+            closeISBNScannerModal
+        );
+
+    }
+}
 
 
 /* =========================================================
-   ESC
+   ESC — LEITOR ISBN
 ========================================================= */
 
 document.addEventListener(
     "keydown",
-    (event) => {
+    event => {
 
         if (
             event.key === "Escape" &&
-            isbnScannerModal.classList.contains(
-                "active"
-            )
+            isbnScannerModal &&
+            isbnScannerModal.classList.contains("active")
         ) {
 
             closeISBNScannerModal();
