@@ -152,6 +152,220 @@ function isValidISBN13(isbn) {
     );
 }
 
+/* =========================================================
+   BUSCAR LIVRO PELO ISBN — GOOGLE BOOKS
+========================================================= */
+
+async function fetchBookByISBN(isbn) {
+
+    const message =
+        isbnScannerMessage;
+
+    try {
+
+        if (message) {
+            message.textContent =
+                "ISBN confirmado! Buscando informações do livro...";
+        }
+
+
+        const url =
+            `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&maxResults=1`;
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Erro ao consultar o Google Books."
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.items ||
+            !data.items.length
+        ) {
+
+            if (message) {
+                message.textContent =
+                    "ISBN encontrado, mas o livro não foi localizado automaticamente.";
+            }
+
+            return;
+
+        }
+
+
+        const book =
+            data.items[0].volumeInfo;
+
+
+        /* =================================================
+           PREENCHER FORMULÁRIO
+        ================================================= */
+
+        const titleInput =
+            document.getElementById(
+                "bookTitle"
+            );
+
+        const authorInput =
+            document.getElementById(
+                "bookAuthor"
+            );
+
+        const publisherInput =
+            document.getElementById(
+                "bookPublisher"
+            );
+
+        const yearInput =
+            document.getElementById(
+                "bookYear"
+            );
+
+        const genreInput =
+            document.getElementById(
+                "bookGenre"
+            );
+
+        const coverInput =
+            document.getElementById(
+                "bookCover"
+            );
+
+        const descriptionInput =
+            document.getElementById(
+                "bookDescription"
+            );
+
+
+        /* TÍTULO */
+
+        if (book.title) {
+
+            titleInput.value =
+                book.title;
+
+        }
+
+
+        /* AUTOR */
+
+        if (
+            book.authors &&
+            book.authors.length
+        ) {
+
+            authorInput.value =
+                book.authors.join(", ");
+
+        }
+
+
+        /* EDITORA */
+
+        if (book.publisher) {
+
+            publisherInput.value =
+                book.publisher;
+
+        }
+
+
+        /* ANO */
+
+        if (book.publishedDate) {
+
+            const year =
+                book.publishedDate.substring(
+                    0,
+                    4
+                );
+
+            if (/^\d{4}$/.test(year)) {
+
+                yearInput.value =
+                    year;
+
+            }
+
+        }
+
+
+        /* GÊNERO */
+
+        if (
+            book.categories &&
+            book.categories.length
+        ) {
+
+            genreInput.value =
+                book.categories.join(", ");
+
+        }
+
+
+        /* CAPA */
+
+        if (
+            book.imageLinks &&
+            book.imageLinks.thumbnail
+        ) {
+
+            coverInput.value =
+                book.imageLinks.thumbnail
+                    .replace(
+                        "http://",
+                        "https://"
+                    );
+
+        }
+
+
+        /* DESCRIÇÃO */
+
+        if (book.description) {
+
+            descriptionInput.value =
+                book.description;
+
+        }
+
+
+        if (message) {
+
+            message.textContent =
+                "Dados encontrados! Confira as informações antes de cadastrar.";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao buscar ISBN no Google Books:",
+            error
+        );
+
+
+        if (message) {
+
+            message.textContent =
+                "Não foi possível buscar os dados automaticamente. Preencha manualmente.";
+
+        }
+
+    }
+
+}
 
 /* =========================================================
    ABRIR LEITOR
@@ -263,27 +477,31 @@ async function openISBNScanner() {
                    ISBN CONFIRMADO
                 ========================================= */
 
-                const isbnInput =
-                    document.getElementById(
-                        "bookISBN"
-                    );
+const isbnInput =
+    document.getElementById(
+        "bookISBN"
+    );
 
 
-                isbnInput.value = isbn;
+isbnInput.value =
+    isbn;
 
 
-                isbnScannerMessage.textContent =
-                    "ISBN confirmado!";
+/* Buscar automaticamente os dados do livro */
+
+await fetchBookByISBN(
+    isbn
+);
 
 
-                stopISBNScanner();
+stopISBNScanner();
 
 
-                setTimeout(() => {
+setTimeout(() => {
 
-                    closeISBNScannerModal();
+    closeISBNScannerModal();
 
-                }, 500);
+}, 700);
 
             },
 
