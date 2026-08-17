@@ -701,6 +701,75 @@ const catalogModalOverlay =
     );
 
 
+/* =========================================================
+   CARREGAR CATEGORIAS
+========================================================= */
+
+async function loadCategories() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db
+            .from("categories")
+            .select("id, name")
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        bookCategory.innerHTML = `
+            <option value="">
+                Selecione uma categoria
+            </option>
+        `;
+
+
+        (data || []).forEach((category) => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                category.id;
+
+            option.textContent =
+                category.name;
+
+            bookCategory.appendChild(
+                option
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar categorias:",
+            error
+        );
+
+        bookCategory.innerHTML = `
+            <option value="">
+                Erro ao carregar categorias
+            </option>
+        `;
+
+    }
+
+}
+
 function openCatalogModal() {
 
     catalogModal.classList.add(
@@ -780,6 +849,11 @@ const catalogForm =
 const catalogMessage =
     document.getElementById(
         "catalogMessage"
+    );
+
+    const bookCategory =
+    document.getElementById(
+        "bookCategory"
     );
 
 
@@ -901,10 +975,10 @@ if (catalogForm) {
                     ).value.trim();
 
 
-                const category =
-                    document.getElementById(
-                        "bookCategory"
-                    ).value.trim();
+const categoryId =
+    document.getElementById(
+        "bookCategory"
+    ).value;
 
 
                 const location =
@@ -974,8 +1048,8 @@ if (catalogForm) {
                     genre:
                         genre || null,
 
-                    category:
-                        category || null,
+category_id:
+    categoryId || null,
 
                     description:
                         description || null,
@@ -1198,10 +1272,10 @@ function openEditBookModal(bookId) {
         book.genre || "";
 
 
-    document.getElementById(
-        "bookCategory"
-    ).value =
-        book.category || "";
+document.getElementById(
+    "bookCategory"
+).value =
+    book.category_id || "";
 
 
     document.getElementById(
@@ -1475,5 +1549,7 @@ logoutButton.addEventListener(
 /* =========================================================
    VERIFICAR SESSÃO
 ========================================================= */
+
+loadCategories();
 
 checkUser();

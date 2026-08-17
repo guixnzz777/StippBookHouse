@@ -1906,3 +1906,44 @@ textarea {
     }
 
 }
+
+/* =========================================================
+   SELECT DE CATEGORIA
+========================================================= */
+
+.catalog-form select {
+    width: 100%;
+
+    padding: 14px 15px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d8d8d8;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #222222;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.catalog-form select:focus {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(49, 92, 76, 0.1);
+}
