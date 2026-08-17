@@ -20,6 +20,13 @@ const db =
 
 
 /* =========================================================
+   GOOGLE BOOKS
+========================================================= */
+
+const GOOGLE_BOOKS_API_KEY =
+    "AIzaSyDCUVAKaVmL2ByfmaTsgmWP799a8Yc4h-Q";
+
+/* =========================================================
    VARIÁVEIS
 ========================================================= */
 
@@ -170,9 +177,9 @@ async function fetchBookByISBN(isbn) {
 
 
        const url =
-    `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}`;
+    `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&key=${GOOGLE_BOOKS_API_KEY}`;
 
-
+    
         const response =
             await fetch(url);
 
