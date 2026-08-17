@@ -8,12 +8,15 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_eCoQvkELqyJoLnhyBWqx6A_yCP7XGFp";
 
-const { createClient } = supabase;
+const {
+    createClient
+} = supabase;
 
-const db = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const db =
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
 /* =========================================================
@@ -32,7 +35,7 @@ let selectedBookId = null;
 
 
 /* =========================================================
-   ELEMENTOS
+   ELEMENTOS PRINCIPAIS
 ========================================================= */
 
 const bookGrid =
@@ -74,6 +77,9 @@ const sidePanelOverlay =
 const closeSidePanel =
     document.getElementById("closeSidePanel");
 
+const loginSubmitButton =
+    document.getElementById("loginSubmitButton");
+
 
 /* =========================================================
    MODAL DE CATALOGAÇÃO
@@ -92,13 +98,18 @@ const cancelCatalogModal =
     document.getElementById("cancelCatalogModal");
 
 const catalogModalOverlay =
-    document.querySelector(".catalog-modal-overlay");
+    document.querySelector(
+        ".catalog-modal-overlay"
+    );
 
 const catalogForm =
     document.getElementById("catalogForm");
 
 const catalogMessage =
     document.getElementById("catalogMessage");
+
+const catalogSubmitButton =
+    document.getElementById("catalogSubmitButton");
 
 const bookCategory =
     document.getElementById("bookCategory");
@@ -109,64 +120,188 @@ const bookCategory =
 ========================================================= */
 
 const bookDetailsModal =
-    document.getElementById("bookDetailsModal");
+    document.getElementById(
+        "bookDetailsModal"
+    );
 
 const bookDetailsOverlay =
-    document.querySelector(".book-details-overlay");
+    document.querySelector(
+        ".book-details-overlay"
+    );
 
 const closeBookDetailsModal =
-    document.getElementById("closeBookDetailsModal");
+    document.getElementById(
+        "closeBookDetailsModal"
+    );
 
 const detailsBookTitle =
-    document.getElementById("detailsBookTitle");
+    document.getElementById(
+        "detailsBookTitle"
+    );
 
 const detailsBookCover =
-    document.getElementById("detailsBookCover");
+    document.getElementById(
+        "detailsBookCover"
+    );
 
 const detailsBookCoverPlaceholder =
-    document.getElementById("detailsBookCoverPlaceholder");
+    document.getElementById(
+        "detailsBookCoverPlaceholder"
+    );
 
 const detailsBookAuthor =
-    document.getElementById("detailsBookAuthor");
+    document.getElementById(
+        "detailsBookAuthor"
+    );
 
 const detailsBookAssetNumber =
-    document.getElementById("detailsBookAssetNumber");
+    document.getElementById(
+        "detailsBookAssetNumber"
+    );
 
 const detailsBookISBN =
-    document.getElementById("detailsBookISBN");
+    document.getElementById(
+        "detailsBookISBN"
+    );
 
 const detailsBookPublisher =
-    document.getElementById("detailsBookPublisher");
+    document.getElementById(
+        "detailsBookPublisher"
+    );
 
 const detailsBookYear =
-    document.getElementById("detailsBookYear");
+    document.getElementById(
+        "detailsBookYear"
+    );
 
 const detailsBookGenre =
-    document.getElementById("detailsBookGenre");
+    document.getElementById(
+        "detailsBookGenre"
+    );
 
 const detailsBookCategory =
-    document.getElementById("detailsBookCategory");
+    document.getElementById(
+        "detailsBookCategory"
+    );
 
 const detailsBookLocation =
-    document.getElementById("detailsBookLocation");
+    document.getElementById(
+        "detailsBookLocation"
+    );
 
 const detailsBookCopies =
-    document.getElementById("detailsBookCopies");
+    document.getElementById(
+        "detailsBookCopies"
+    );
 
 const detailsBookStatus =
-    document.getElementById("detailsBookStatus");
+    document.getElementById(
+        "detailsBookStatus"
+    );
 
 const detailsBookDescription =
-    document.getElementById("detailsBookDescription");
+    document.getElementById(
+        "detailsBookDescription"
+    );
 
 const bookAdminActions =
-    document.getElementById("bookAdminActions");
+    document.getElementById(
+        "bookAdminActions"
+    );
 
 const editBookButton =
-    document.getElementById("editBookButton");
+    document.getElementById(
+        "editBookButton"
+    );
 
 const deleteBookButton =
-    document.getElementById("deleteBookButton");
+    document.getElementById(
+        "deleteBookButton"
+    );
+
+
+/* =========================================================
+   FUNÇÕES AUXILIARES
+========================================================= */
+
+function normalizeText(value) {
+
+    return String(value ?? "")
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .toLowerCase()
+        .trim();
+
+}
+
+
+function setMessage(
+    element,
+    message = "",
+    type = "normal"
+) {
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent =
+        message;
+
+    if (type === "error") {
+
+        element.style.color =
+            "#a33";
+
+    } else if (type === "success") {
+
+        element.style.color =
+            "#315c4c";
+
+    } else {
+
+        element.style.color =
+            "";
+
+    }
+
+}
+
+
+function getBookById(bookId) {
+
+    return books.find(
+        book =>
+            String(book.id) ===
+            String(bookId)
+    );
+
+}
+
+
+function setModalState(
+    modal,
+    isOpen
+) {
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.toggle(
+        "active",
+        isOpen
+    );
+
+    modal.setAttribute(
+        "aria-hidden",
+        String(!isOpen)
+    );
+
+}
 
 
 /* =========================================================
@@ -183,9 +318,12 @@ async function loadCategories() {
         } = await db
             .from("categories")
             .select("id, name")
-            .order("name", {
-                ascending: true
-            });
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
 
 
         if (error) {
@@ -193,30 +331,48 @@ async function loadCategories() {
         }
 
 
-        categories = data || [];
+        categories =
+            data || [];
 
 
-        bookCategory.innerHTML = `
-            <option value="">
-                Selecione uma categoria
-            </option>
-        `;
+        bookCategory.innerHTML = "";
 
 
-        categories.forEach((category) => {
+        const defaultOption =
+            document.createElement(
+                "option"
+            );
 
-            const option =
-                document.createElement("option");
+        defaultOption.value = "";
 
-            option.value =
-                category.id;
+        defaultOption.textContent =
+            "Selecione uma categoria";
 
-            option.textContent =
-                category.name;
+        bookCategory.appendChild(
+            defaultOption
+        );
 
-            bookCategory.appendChild(option);
 
-        });
+        categories.forEach(
+            category => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    category.id;
+
+                option.textContent =
+                    category.name;
+
+                bookCategory.appendChild(
+                    option
+                );
+
+            }
+        );
 
 
     } catch (error) {
@@ -224,6 +380,27 @@ async function loadCategories() {
         console.error(
             "Erro ao carregar categorias:",
             error
+        );
+
+
+        categories = [];
+
+
+        bookCategory.innerHTML = "";
+
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value = "";
+
+        option.textContent =
+            "Categorias indisponíveis";
+
+        bookCategory.appendChild(
+            option
         );
 
     }
@@ -235,7 +412,20 @@ async function loadCategories() {
    NOME DA CATEGORIA
 ========================================================= */
 
-function getCategoryName(categoryId) {
+function getCategoryName(
+    categoryId
+) {
+
+    if (
+        categoryId === null ||
+        categoryId === undefined ||
+        categoryId === ""
+    ) {
+
+        return "Sem categoria";
+
+    }
+
 
     const category =
         categories.find(
@@ -253,150 +443,286 @@ function getCategoryName(categoryId) {
 
 
 /* =========================================================
-   RENDERIZAR LIVROS
+   CRIAR CAPA DO LIVRO
 ========================================================= */
 
-function renderBooks(list) {
+function createBookCover(
+    book
+) {
 
-    bookGrid.innerHTML = "";
+    const cover =
+        document.createElement(
+            "div"
+        );
+
+    cover.className =
+        "book-cover";
 
 
-    if (!list.length) {
+    if (book.cover_url) {
 
-        bookGrid.innerHTML =
-            "<p>Nenhum livro encontrado.</p>";
+        const image =
+            document.createElement(
+                "img"
+            );
 
-        return;
+        image.src =
+            book.cover_url;
+
+        image.alt =
+            `Capa de ${
+                book.title || "livro"
+            }`;
+
+        image.loading =
+            "lazy";
+
+
+        image.addEventListener(
+            "error",
+            () => {
+
+                image.remove();
+
+                cover.textContent =
+                    "📖";
+
+            }
+        );
+
+
+        cover.appendChild(
+            image
+        );
+
+
+    } else {
+
+        cover.textContent =
+            "📖";
 
     }
 
 
-    list.forEach((book) => {
+    return cover;
 
-        const card =
-            document.createElement("article");
-
-        card.className =
-            "book-card";
+}
 
 
-        card.dataset.id =
+/* =========================================================
+   CRIAR CARD
+========================================================= */
+
+function createBookCard(
+    book
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+    card.className =
+        "book-card";
+
+    card.dataset.id =
+        book.id;
+
+    card.tabIndex = 0;
+
+    card.setAttribute(
+        "role",
+        "button"
+    );
+
+    card.setAttribute(
+        "aria-label",
+        `Ver detalhes de ${
+            book.title || "livro"
+        }`
+    );
+
+
+    /* CAPA */
+
+    card.appendChild(
+        createBookCover(book)
+    );
+
+
+    /* INFORMAÇÕES */
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+    info.className =
+        "book-info";
+
+
+    const title =
+        document.createElement(
+            "h3"
+        );
+
+    title.textContent =
+        book.title ||
+        "Sem título";
+
+
+    const author =
+        document.createElement(
+            "p"
+        );
+
+    author.className =
+        "book-author";
+
+    author.textContent =
+        book.author ||
+        "Autor desconhecido";
+
+
+    const genre =
+        document.createElement(
+            "p"
+        );
+
+    genre.className =
+        "book-genre";
+
+    genre.textContent =
+        book.genre ||
+        "Sem gênero informado";
+
+
+    const details =
+        document.createElement(
+            "div"
+        );
+
+    details.className =
+        "book-details";
+
+
+    if (
+        book.publication_year
+    ) {
+
+        const year =
+            document.createElement(
+                "span"
+            );
+
+        year.textContent =
+            book.publication_year;
+
+        details.appendChild(
+            year
+        );
+
+    }
+
+
+    const availability =
+        document.createElement(
+            "span"
+        );
+
+
+    const available =
+        Number(
+            book.available_copies
+        ) > 0;
+
+
+    availability.textContent =
+        available
+            ? "Disponível"
+            : "Indisponível";
+
+
+    details.appendChild(
+        availability
+    );
+
+
+    const copies =
+        document.createElement(
+            "p"
+        );
+
+    copies.className =
+        "book-copies";
+
+    copies.textContent =
+        `${book.available_copies ?? 0} de ${
+            book.total_copies ?? 0
+        } exemplar(es) disponível(is)`;
+
+
+    info.appendChild(title);
+
+    info.appendChild(author);
+
+    info.appendChild(genre);
+
+    info.appendChild(details);
+
+    info.appendChild(copies);
+
+
+    /* =====================================================
+       AÇÕES ADMIN
+    ===================================================== */
+
+    if (currentUserIsAdmin) {
+
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+        actions.className =
+            "book-admin-actions";
+
+
+        actions.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+            }
+        );
+
+
+        const editButton =
+            document.createElement(
+                "button"
+            );
+
+        editButton.type =
+            "button";
+
+        editButton.className =
+            "edit-book-button";
+
+        editButton.dataset.id =
             book.id;
 
-
-        card.innerHTML = `
-
-            <div class="book-cover">
-
-                ${
-                    book.cover_url
-
-                    ? `
-                        <img
-                            src="${book.cover_url}"
-                            alt="Capa de ${book.title}"
-                        >
-                    `
-
-                    : "📖"
-                }
-
-            </div>
+        editButton.textContent =
+            "✏️ Editar";
 
 
-            <div class="book-info">
-
-                <h3>
-                    ${book.title || "Sem título"}
-                </h3>
-
-                <p class="book-author">
-                    ${book.author || "Autor desconhecido"}
-                </p>
-
-                <p class="book-genre">
-                    ${book.genre || "Sem gênero informado"}
-                </p>
-
-
-                <div class="book-details">
-
-                    ${
-                        book.publication_year
-                        ? `<span>${book.publication_year}</span>`
-                        : ""
-                    }
-
-                    <span>
-
-                        ${
-                            Number(book.available_copies) > 0
-                            ? "Disponível"
-                            : "Indisponível"
-                        }
-
-                    </span>
-
-                </div>
-
-
-                <p class="book-copies">
-
-                    ${book.available_copies ?? 0}
-                    de
-                    ${book.total_copies ?? 0}
-                    exemplar(es) disponível(is)
-
-                </p>
-
-
-                ${
-                    currentUserIsAdmin
-
-                    ? `
-
-                        <div
-                            class="book-admin-actions"
-                            onclick="event.stopPropagation()"
-                        >
-
-                            <button
-                                type="button"
-                                class="edit-book-button"
-                                data-id="${book.id}"
-                            >
-                                ✏️ Editar
-                            </button>
-
-                            <button
-                                type="button"
-                                class="delete-book-button"
-                                data-id="${book.id}"
-                            >
-                                🗑️ Excluir
-                            </button>
-
-                        </div>
-
-                    `
-
-                    : ""
-                }
-
-            </div>
-
-        `;
-
-
-        /* =========================================
-           CLICAR NO LIVRO
-        ========================================= */
-
-        card.addEventListener(
+        editButton.addEventListener(
             "click",
-            () => {
+            event => {
 
-                openBookDetailsModal(
+                event.stopPropagation();
+
+                openEditBookModal(
                     book.id
                 );
 
@@ -404,60 +730,149 @@ function renderBooks(list) {
         );
 
 
-        bookGrid.appendChild(card);
+        const deleteButton =
+            document.createElement(
+                "button"
+            );
 
-    });
+        deleteButton.type =
+            "button";
+
+        deleteButton.className =
+            "delete-book-button";
+
+        deleteButton.dataset.id =
+            book.id;
+
+        deleteButton.textContent =
+            "🗑️ Excluir";
 
 
-    attachBookAdminEvents();
+        deleteButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                deleteBook(
+                    book.id
+                );
+
+            }
+        );
+
+
+        actions.appendChild(
+            editButton
+        );
+
+        actions.appendChild(
+            deleteButton
+        );
+
+        info.appendChild(
+            actions
+        );
+
+    }
+
+
+    card.appendChild(
+        info
+    );
+
+
+    /* =====================================================
+       ABRIR DETALHES
+    ===================================================== */
+
+    function openDetails() {
+
+        openBookDetailsModal(
+            book.id
+        );
+
+    }
+
+
+    card.addEventListener(
+        "click",
+        openDetails
+    );
+
+
+    card.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                openDetails();
+
+            }
+
+        }
+    );
+
+
+    return card;
 
 }
 
 
 /* =========================================================
-   BOTÕES ADMINISTRATIVOS
+   RENDERIZAR LIVROS
 ========================================================= */
 
-function attachBookAdminEvents() {
+function renderBooks(
+    list
+) {
 
-    document
-        .querySelectorAll(".edit-book-button")
-        .forEach((button) => {
+    bookGrid.innerHTML = "";
 
-            button.addEventListener(
-                "click",
-                (event) => {
 
-                    event.stopPropagation();
+    if (!Array.isArray(list) || !list.length) {
 
-                    openEditBookModal(
-                        button.dataset.id
-                    );
-
-                }
+        const message =
+            document.createElement(
+                "p"
             );
 
-        });
+        message.textContent =
+            "Nenhum livro encontrado.";
+
+        bookGrid.appendChild(
+            message
+        );
+
+        return;
+
+    }
 
 
-    document
-        .querySelectorAll(".delete-book-button")
-        .forEach((button) => {
+    const fragment =
+        document.createDocumentFragment();
 
-            button.addEventListener(
-                "click",
-                (event) => {
 
-                    event.stopPropagation();
+    list.forEach(
+        book => {
 
-                    deleteBook(
-                        button.dataset.id
-                    );
-
-                }
+            fragment.appendChild(
+                createBookCard(book)
             );
 
-        });
+        }
+    );
+
+
+    bookGrid.appendChild(
+        fragment
+    );
 
 }
 
@@ -480,9 +895,12 @@ async function loadBooks() {
         } = await db
             .from("books")
             .select("*")
-            .order("title", {
-                ascending: true
-            });
+            .order(
+                "title",
+                {
+                    ascending: true
+                }
+            );
 
 
         if (error) {
@@ -494,7 +912,7 @@ async function loadBooks() {
             data || [];
 
 
-        renderBooks(books);
+        searchBooks();
 
 
     } catch (error) {
@@ -505,17 +923,35 @@ async function loadBooks() {
         );
 
 
-        bookGrid.innerHTML = `
+        bookGrid.innerHTML = "";
 
-            <p>
-                Erro ao carregar catálogo.
-            </p>
 
-            <p>
-                ${error.message}
-            </p>
+        const message =
+            document.createElement(
+                "p"
+            );
 
-        `;
+        message.textContent =
+            "Erro ao carregar o catálogo.";
+
+
+        const details =
+            document.createElement(
+                "p"
+            );
+
+        details.textContent =
+            error.message ||
+            "Erro desconhecido.";
+
+
+        bookGrid.appendChild(
+            message
+        );
+
+        bookGrid.appendChild(
+            details
+        );
 
     }
 
@@ -529,52 +965,81 @@ async function loadBooks() {
 function searchBooks() {
 
     const query =
-        searchInput.value
-            .toLowerCase()
-            .trim();
+        normalizeText(
+            searchInput.value
+        );
+
+
+    if (!query) {
+
+        renderBooks(
+            books
+        );
+
+        return;
+
+    }
 
 
     const filteredBooks =
-        books.filter((book) => {
+        books.filter(
+            book => {
 
-            return (
+                const title =
+                    normalizeText(
+                        book.title
+                    );
 
-                (book.title || "")
-                    .toLowerCase()
-                    .includes(query)
+                const author =
+                    normalizeText(
+                        book.author
+                    );
 
-                ||
+                const genre =
+                    normalizeText(
+                        book.genre
+                    );
 
-                (book.author || "")
-                    .toLowerCase()
-                    .includes(query)
+                const assetNumber =
+                    normalizeText(
+                        book.asset_number
+                    );
 
-                ||
+                const category =
+                    normalizeText(
+                        getCategoryName(
+                            book.category_id
+                        )
+                    );
 
-                (book.genre || "")
-                    .toLowerCase()
-                    .includes(query)
+                const isbn =
+                    normalizeText(
+                        book.isbn
+                    );
 
-                ||
-
-                (book.asset_number || "")
-                    .toLowerCase()
-                    .includes(query)
-
-                ||
-
-                getCategoryName(
-                    book.category_id
-                )
-                    .toLowerCase()
-                    .includes(query)
-
-            );
-
-        });
+                const publisher =
+                    normalizeText(
+                        book.publisher
+                    );
 
 
-    renderBooks(filteredBooks);
+                return (
+                    title.includes(query) ||
+                    author.includes(query) ||
+                    genre.includes(query) ||
+                    assetNumber.includes(query) ||
+                    category.includes(query) ||
+                    isbn.includes(query) ||
+                    publisher.includes(query)
+                );
+
+            }
+        );
+
+
+    renderBooks(
+        filteredBooks
+    );
 
 }
 
@@ -589,13 +1054,13 @@ searchInput.addEventListener(
    MODAL DE DETALHES
 ========================================================= */
 
-function openBookDetailsModal(bookId) {
+function openBookDetailsModal(
+    bookId
+) {
 
     const book =
-        books.find(
-            item =>
-                String(item.id) ===
-                String(bookId)
+        getBookById(
+            bookId
         );
 
 
@@ -609,31 +1074,38 @@ function openBookDetailsModal(bookId) {
 
 
     detailsBookTitle.textContent =
-        book.title || "Sem título";
+        book.title ||
+        "Sem título";
 
 
     detailsBookAuthor.textContent =
-        book.author || "—";
+        book.author ||
+        "—";
 
 
     detailsBookAssetNumber.textContent =
-        book.asset_number || "—";
+        book.asset_number ||
+        "—";
 
 
     detailsBookISBN.textContent =
-        book.isbn || "—";
+        book.isbn ||
+        "—";
 
 
     detailsBookPublisher.textContent =
-        book.publisher || "—";
+        book.publisher ||
+        "—";
 
 
     detailsBookYear.textContent =
-        book.publication_year || "—";
+        book.publication_year ||
+        "—";
 
 
     detailsBookGenre.textContent =
-        book.genre || "—";
+        book.genre ||
+        "—";
 
 
     detailsBookCategory.textContent =
@@ -643,17 +1115,26 @@ function openBookDetailsModal(bookId) {
 
 
     detailsBookLocation.textContent =
-        book.shelf_location || "—";
+        book.shelf_location ||
+        "—";
 
 
     detailsBookCopies.textContent =
-        `${book.available_copies ?? 0} de ${book.total_copies ?? 0}`;
+        `${book.available_copies ?? 0} de ${
+            book.total_copies ?? 0
+        }`;
+
+
+    const available =
+        Number(
+            book.available_copies
+        ) > 0;
 
 
     detailsBookStatus.textContent =
-        Number(book.available_copies) > 0
-        ? "Disponível"
-        : "Indisponível";
+        available
+            ? "Disponível"
+            : "Indisponível";
 
 
     detailsBookDescription.textContent =
@@ -661,7 +1142,9 @@ function openBookDetailsModal(bookId) {
         "Nenhuma descrição informada.";
 
 
-    /* CAPA */
+    /* =====================================================
+       CAPA
+    ===================================================== */
 
     if (book.cover_url) {
 
@@ -669,7 +1152,9 @@ function openBookDetailsModal(bookId) {
             book.cover_url;
 
         detailsBookCover.alt =
-            `Capa de ${book.title}`;
+            `Capa de ${
+                book.title || "livro"
+            }`;
 
         detailsBookCover.style.display =
             "block";
@@ -677,9 +1162,29 @@ function openBookDetailsModal(bookId) {
         detailsBookCoverPlaceholder.style.display =
             "none";
 
+
+        detailsBookCover.onerror =
+            () => {
+
+                detailsBookCover.onerror =
+                    null;
+
+                detailsBookCover.src =
+                    "";
+
+                detailsBookCover.style.display =
+                    "none";
+
+                detailsBookCoverPlaceholder.style.display =
+                    "grid";
+
+            };
+
+
     } else {
 
-        detailsBookCover.src = "";
+        detailsBookCover.src =
+            "";
 
         detailsBookCover.style.display =
             "none";
@@ -690,24 +1195,21 @@ function openBookDetailsModal(bookId) {
     }
 
 
-    /* AÇÕES DO ADMIN */
+    /* =====================================================
+       AÇÕES ADMIN
+    ===================================================== */
 
-    if (currentUserIsAdmin) {
-
-        bookAdminActions.style.display =
-            "flex";
-
-    } else {
-
-        bookAdminActions.style.display =
-            "none";
-
-    }
+    bookAdminActions.style.display =
+        currentUserIsAdmin
+            ? "flex"
+            : "none";
 
 
-    bookDetailsModal.classList.add(
-        "active"
+    setModalState(
+        bookDetailsModal,
+        true
     );
+
 
     document.body.classList.add(
         "modal-open"
@@ -722,15 +1224,19 @@ function openBookDetailsModal(bookId) {
 
 function closeBookDetailsModalFunction() {
 
-    bookDetailsModal.classList.remove(
-        "active"
+    setModalState(
+        bookDetailsModal,
+        false
     );
+
 
     document.body.classList.remove(
         "modal-open"
     );
 
-    selectedBookId = null;
+
+    selectedBookId =
+        null;
 
 }
 
@@ -802,22 +1308,48 @@ deleteBookButton.addEventListener(
 
 function openSidePanel() {
 
-    sidePanel.classList.add("active");
+    sidePanel.classList.add(
+        "active"
+    );
 
-    sidePanelOverlay.classList.add("active");
+    sidePanelOverlay.classList.add(
+        "active"
+    );
 
-    document.body.classList.add("panel-open");
+
+    sidePanel.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    document.body.classList.add(
+        "panel-open"
+    );
 
 }
 
 
 function closeSidePanelFunction() {
 
-    sidePanel.classList.remove("active");
+    sidePanel.classList.remove(
+        "active"
+    );
 
-    sidePanelOverlay.classList.remove("active");
+    sidePanelOverlay.classList.remove(
+        "active"
+    );
 
-    document.body.classList.remove("panel-open");
+
+    sidePanel.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+
+    document.body.classList.remove(
+        "panel-open"
+    );
 
 }
 
@@ -841,115 +1373,77 @@ sidePanelOverlay.addEventListener(
 
 
 /* =========================================================
-   VERIFICAR USUÁRIO
+   ATUALIZAR INTERFACE DO USUÁRIO
 ========================================================= */
 
-async function checkUser() {
-
-    const {
-        data: {
-            user
-        }
-    } = await db.auth.getUser();
-
-
-    if (!user) {
-
-        currentUserIsAdmin =
-            false;
-
-        loginPanel.style.display =
-            "block";
-
-        adminPanel.style.display =
-            "none";
-
-        sidePanelTitle.textContent =
-            "Entrar";
-
-        loginButton.textContent =
-            "Entrar";
-
-
-        renderBooks(books);
-
-        return;
-
-    }
-
-
-    const {
-        data: profile,
-        error
-    } = await db
-        .from("profiles")
-        .select("full_name, role")
-        .eq("id", user.id)
-        .single();
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao carregar perfil:",
-            error
-        );
-
-        currentUserIsAdmin =
-            false;
-
-        renderBooks(books);
-
-        return;
-
-    }
-
-
-    console.log(
-        "PERFIL DO USUÁRIO:",
-        profile
-    );
-
-
-    console.log(
-        "ROLE:",
-        profile.role
-    );
-
-
-    if (
-        profile.role === "admin"
-    ) {
-
-        currentUserIsAdmin =
-            true;
-
-        loginPanel.style.display =
-            "none";
-
-        adminPanel.style.display =
-            "block";
-
-        sidePanelTitle.textContent =
-            "Painel da biblioteca";
-
-        adminUserName.textContent =
-            profile.full_name ||
-            "Administrador";
-
-        loginButton.textContent =
-            "Painel";
-
-
-        renderBooks(books);
-
-        return;
-
-    }
-
+function setLoggedOutUI() {
 
     currentUserIsAdmin =
         false;
+
+
+    loginPanel.style.display =
+        "block";
+
+    adminPanel.style.display =
+        "none";
+
+
+    sidePanelTitle.textContent =
+        "Entrar";
+
+
+    loginButton.textContent =
+        "Entrar";
+
+
+    renderBooks(
+        books
+    );
+
+}
+
+
+function setAdminUI(
+    profile
+) {
+
+    currentUserIsAdmin =
+        true;
+
+
+    loginPanel.style.display =
+        "none";
+
+    adminPanel.style.display =
+        "block";
+
+
+    sidePanelTitle.textContent =
+        "Painel da biblioteca";
+
+
+    adminUserName.textContent =
+        profile.full_name ||
+        "Administrador";
+
+
+    loginButton.textContent =
+        "Painel";
+
+
+    renderBooks(
+        books
+    );
+
+}
+
+
+function setUserUI() {
+
+    currentUserIsAdmin =
+        false;
+
 
     loginPanel.style.display =
         "none";
@@ -957,14 +1451,108 @@ async function checkUser() {
     adminPanel.style.display =
         "none";
 
+
     sidePanelTitle.textContent =
         "Conta";
+
 
     loginButton.textContent =
         "Minha conta";
 
 
-    renderBooks(books);
+    renderBooks(
+        books
+    );
+
+}
+
+
+/* =========================================================
+   VERIFICAR USUÁRIO
+========================================================= */
+
+async function checkUser() {
+
+    try {
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } = await db.auth.getUser();
+
+
+        if (userError) {
+            throw userError;
+        }
+
+
+        if (!user) {
+
+            setLoggedOutUI();
+
+            return;
+
+        }
+
+
+        const {
+            data: profile,
+            error: profileError
+        } = await db
+            .from("profiles")
+            .select(
+                "full_name, role"
+            )
+            .eq(
+                "id",
+                user.id
+            )
+            .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "Erro ao carregar perfil:",
+                profileError
+            );
+
+            setUserUI();
+
+            return;
+
+        }
+
+
+        if (
+            profile &&
+            profile.role === "admin"
+        ) {
+
+            setAdminUI(
+                profile
+            );
+
+            return;
+
+        }
+
+
+        setUserUI();
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao verificar usuário:",
+            error
+        );
+
+        setLoggedOutUI();
+
+    }
 
 }
 
@@ -975,74 +1563,129 @@ async function checkUser() {
 
 loginForm.addEventListener(
     "submit",
-    async (event) => {
+    async event => {
 
         event.preventDefault();
 
 
         const email =
             document
-                .getElementById("loginEmail")
+                .getElementById(
+                    "loginEmail"
+                )
                 .value
                 .trim();
 
 
         const password =
             document
-                .getElementById("loginPassword")
+                .getElementById(
+                    "loginPassword"
+                )
                 .value;
 
 
-        loginMessage.textContent =
-            "Entrando...";
+        if (!email || !password) {
 
-
-        const {
-            data,
-            error
-        } =
-            await db.auth.signInWithPassword({
-
-                email,
-                password
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Erro no login:",
-                error
+            setMessage(
+                loginMessage,
+                "Preencha o e-mail e a senha.",
+                "error"
             );
-
-            loginMessage.textContent =
-                "E-mail ou senha incorretos.";
 
             return;
 
         }
 
 
-        console.log(
-            "Usuário conectado:",
-            data.user
+        loginSubmitButton.disabled =
+            true;
+
+        loginSubmitButton.textContent =
+            "Entrando...";
+
+
+        setMessage(
+            loginMessage,
+            "Entrando..."
         );
 
 
-        loginMessage.textContent =
-            "Login realizado com sucesso!";
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await db.auth
+                    .signInWithPassword({
+
+                        email,
+                        password
+
+                    });
 
 
-        await checkUser();
+            if (error) {
+                throw error;
+            }
 
 
-        setTimeout(() => {
+            if (!data.user) {
 
-            loginMessage.textContent =
-                "";
+                throw new Error(
+                    "Não foi possível identificar o usuário."
+                );
 
-        }, 1000);
+            }
+
+
+            await checkUser();
+
+
+            setMessage(
+                loginMessage,
+                "Login realizado com sucesso!",
+                "success"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    loginMessage.textContent =
+                        "";
+
+                    closeSidePanelFunction();
+
+                },
+                700
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Erro no login:",
+                error
+            );
+
+
+            setMessage(
+                loginMessage,
+                "E-mail ou senha incorretos.",
+                "error"
+            );
+
+        } finally {
+
+            loginSubmitButton.disabled =
+                false;
+
+            loginSubmitButton.textContent =
+                "Entrar";
+
+        }
 
     }
 );
@@ -1054,9 +1697,11 @@ loginForm.addEventListener(
 
 function openCatalogModal() {
 
-    catalogModal.classList.add(
-        "active"
+    setModalState(
+        catalogModal,
+        true
     );
+
 
     document.body.classList.add(
         "modal-open"
@@ -1071,9 +1716,11 @@ function openCatalogModal() {
 
 function closeCatalogModalFunction() {
 
-    catalogModal.classList.remove(
-        "active"
+    setModalState(
+        catalogModal,
+        false
     );
+
 
     document.body.classList.remove(
         "modal-open"
@@ -1090,7 +1737,19 @@ showCatalogForm.addEventListener(
     "click",
     () => {
 
-        editingBookId = null;
+        if (!currentUserIsAdmin) {
+
+            alert(
+                "Apenas administradores podem catalogar livros."
+            );
+
+            return;
+
+        }
+
+
+        editingBookId =
+            null;
 
 
         document.getElementById(
@@ -1104,11 +1763,17 @@ showCatalogForm.addEventListener(
 
         document.getElementById(
             "bookCopies"
-        ).value = 1;
+        ).value =
+            "1";
 
 
-        catalogMessage.textContent =
-            "";
+        setMessage(
+            catalogMessage
+        );
+
+
+        catalogSubmitButton.textContent =
+            "Cadastrar livro";
 
 
         openCatalogModal();
@@ -1139,13 +1804,24 @@ catalogModalOverlay.addEventListener(
    EDITAR LIVRO
 ========================================================= */
 
-function openEditBookModal(bookId) {
+function openEditBookModal(
+    bookId
+) {
+
+    if (!currentUserIsAdmin) {
+
+        alert(
+            "Apenas administradores podem editar livros."
+        );
+
+        return;
+
+    }
+
 
     const book =
-        books.find(
-            item =>
-                String(item.id) ===
-                String(bookId)
+        getBookById(
+            bookId
         );
 
 
@@ -1242,11 +1918,236 @@ function openEditBookModal(bookId) {
         book.total_copies || 1;
 
 
-    catalogMessage.textContent =
-        "";
+    setMessage(
+        catalogMessage
+    );
+
+
+    catalogSubmitButton.textContent =
+        "Salvar alterações";
 
 
     openCatalogModal();
+
+}
+
+
+/* =========================================================
+   VALIDAR FORMULÁRIO
+========================================================= */
+
+function getCatalogFormData() {
+
+    const title =
+        document
+            .getElementById(
+                "bookTitle"
+            )
+            .value
+            .trim();
+
+
+    const author =
+        document
+            .getElementById(
+                "bookAuthor"
+            )
+            .value
+            .trim();
+
+
+    const assetNumber =
+        document
+            .getElementById(
+                "bookAssetNumber"
+            )
+            .value
+            .trim();
+
+
+    const isbn =
+        document
+            .getElementById(
+                "bookISBN"
+            )
+            .value
+            .trim();
+
+
+    const publisher =
+        document
+            .getElementById(
+                "bookPublisher"
+            )
+            .value
+            .trim();
+
+
+    const year =
+        document
+            .getElementById(
+                "bookYear"
+            )
+            .value;
+
+
+    const genre =
+        document
+            .getElementById(
+                "bookGenre"
+            )
+            .value
+            .trim();
+
+
+    const categoryId =
+        document
+            .getElementById(
+                "bookCategory"
+            )
+            .value;
+
+
+    const location =
+        document
+            .getElementById(
+                "bookLocation"
+            )
+            .value
+            .trim();
+
+
+    const cover =
+        document
+            .getElementById(
+                "bookCover"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "bookDescription"
+            )
+            .value
+            .trim();
+
+
+    const copies =
+        Number(
+            document
+                .getElementById(
+                    "bookCopies"
+                )
+                .value
+        );
+
+
+    if (!title) {
+
+        throw new Error(
+            "O título é obrigatório."
+        );
+
+    }
+
+
+    if (!author) {
+
+        throw new Error(
+            "O autor é obrigatório."
+        );
+
+    }
+
+
+    if (!assetNumber) {
+
+        throw new Error(
+            "O tombo é obrigatório."
+        );
+
+    }
+
+
+    if (
+        !Number.isInteger(copies) ||
+        copies < 1
+    ) {
+
+        throw new Error(
+            "A quantidade de exemplares deve ser pelo menos 1."
+        );
+
+    }
+
+
+    let publicationYear =
+        null;
+
+
+    if (year !== "") {
+
+        publicationYear =
+            Number(year);
+
+
+        if (
+            !Number.isInteger(
+                publicationYear
+            ) ||
+            publicationYear < 0 ||
+            publicationYear > 2100
+        ) {
+
+            throw new Error(
+                "Informe um ano de publicação válido."
+            );
+
+        }
+
+    }
+
+
+    return {
+
+        title,
+
+        author,
+
+        asset_number:
+            assetNumber,
+
+        isbn:
+            isbn || null,
+
+        publisher:
+            publisher || null,
+
+        publication_year:
+            publicationYear,
+
+        genre:
+            genre || null,
+
+        category_id:
+            categoryId || null,
+
+        description:
+            description || null,
+
+        cover_url:
+            cover || null,
+
+        shelf_location:
+            location || null,
+
+        total_copies:
+            copies
+
+    };
 
 }
 
@@ -1257,25 +2158,61 @@ function openEditBookModal(bookId) {
 
 catalogForm.addEventListener(
     "submit",
-    async (event) => {
+    async event => {
 
         event.preventDefault();
 
 
-        catalogMessage.textContent =
-            editingBookId
-            ? "Salvando alterações..."
-            : "Cadastrando livro...";
+        if (!currentUserIsAdmin) {
+
+            setMessage(
+                catalogMessage,
+                "Você não possui permissão de administrador.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const isEditing =
+            Boolean(
+                editingBookId
+            );
+
+
+        catalogSubmitButton.disabled =
+            true;
+
+
+        catalogSubmitButton.textContent =
+            isEditing
+                ? "Salvando..."
+                : "Cadastrando...";
+
+
+        setMessage(
+            catalogMessage,
+            isEditing
+                ? "Salvando alterações..."
+                : "Cadastrando livro..."
+        );
 
 
         try {
+
+            /* =================================================
+               USUÁRIO
+            ================================================= */
 
             const {
                 data: {
                     user
                 },
                 error: userError
-            } = await db.auth.getUser();
+            } =
+                await db.auth.getUser();
 
 
             if (userError) {
@@ -1292,14 +2229,22 @@ catalogForm.addEventListener(
             }
 
 
+            /* =================================================
+               PERFIL
+            ================================================= */
+
             const {
                 data: profile,
                 error: profileError
-            } = await db
-                .from("profiles")
-                .select("role")
-                .eq("id", user.id)
-                .single();
+            } =
+                await db
+                    .from("profiles")
+                    .select("role")
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .maybeSingle();
 
 
             if (profileError) {
@@ -1319,187 +2264,65 @@ catalogForm.addEventListener(
             }
 
 
-            const title =
-                document
-                    .getElementById("bookTitle")
-                    .value
-                    .trim();
+            /* =================================================
+               DADOS
+            ================================================= */
+
+            const bookData =
+                getCatalogFormData();
 
 
-            const author =
-                document
-                    .getElementById("bookAuthor")
-                    .value
-                    .trim();
-
-
-            const assetNumber =
-                document
-                    .getElementById("bookAssetNumber")
-                    .value
-                    .trim();
-
-
-            const isbn =
-                document
-                    .getElementById("bookISBN")
-                    .value
-                    .trim();
-
-
-            const publisher =
-                document
-                    .getElementById("bookPublisher")
-                    .value
-                    .trim();
-
-
-            const year =
-                document
-                    .getElementById("bookYear")
-                    .value;
-
-
-            const genre =
-                document
-                    .getElementById("bookGenre")
-                    .value
-                    .trim();
-
-
-            const categoryId =
-                document
-                    .getElementById("bookCategory")
-                    .value;
-
-
-            const location =
-                document
-                    .getElementById("bookLocation")
-                    .value
-                    .trim();
-
-
-            const cover =
-                document
-                    .getElementById("bookCover")
-                    .value
-                    .trim();
-
-
-            const description =
-                document
-                    .getElementById("bookDescription")
-                    .value
-                    .trim();
-
-
-            const copies =
-                Number(
-                    document
-                        .getElementById("bookCopies")
-                        .value
-                );
-
-
-            if (!title || !author) {
-
-                throw new Error(
-                    "Título e autor são obrigatórios."
-                );
-
-            }
-
-
-            if (!copies || copies < 1) {
-
-                throw new Error(
-                    "A quantidade de exemplares deve ser pelo menos 1."
-                );
-
-            }
-
-
-            const bookData = {
-
-                title,
-
-                author,
-
-                asset_number:
-                    assetNumber || null,
-
-                isbn:
-                    isbn || null,
-
-                publisher:
-                    publisher || null,
-
-                publication_year:
-                    year
-                    ? Number(year)
-                    : null,
-
-                genre:
-                    genre || null,
-
-                category_id:
-                    categoryId || null,
-
-                description:
-                    description || null,
-
-                cover_url:
-                    cover || null,
-
-                shelf_location:
-                    location || null,
-
-                total_copies:
-                    copies
-
-            };
-
-
-            /* =========================================
+            /* =================================================
                EDITAR
-            ========================================= */
+            ================================================= */
 
-            if (editingBookId) {
+            if (isEditing) {
 
                 const currentBook =
-                    books.find(
-                        item =>
-                            String(item.id) ===
-                            String(editingBookId)
+                    getBookById(
+                        editingBookId
                     );
 
 
-                if (currentBook) {
+                if (!currentBook) {
 
-                    bookData.available_copies =
-                        Math.min(
-                            Number(
-                                currentBook.available_copies
-                            ),
-                            copies
-                        );
+                    throw new Error(
+                        "Livro não encontrado."
+                    );
 
                 }
+
+
+                /*
+                 * Mantém a quantidade de exemplares
+                 * atualmente disponíveis sem permitir
+                 * que ela ultrapasse o novo total.
+                 */
+
+                bookData.available_copies =
+                    Math.min(
+                        Number(
+                            currentBook.available_copies ?? 0
+                        ),
+                        bookData.total_copies
+                    );
 
 
                 const {
                     data,
                     error
-                } = await db
-                    .from("books")
-                    .update(bookData)
-                    .eq(
-                        "id",
-                        editingBookId
-                    )
-                    .select()
-                    .single();
+                } =
+                    await db
+                        .from("books")
+                        .update(
+                            bookData
+                        )
+                        .eq(
+                            "id",
+                            editingBookId
+                        )
+                        .select()
+                        .single();
 
 
                 if (error) {
@@ -1513,20 +2336,24 @@ catalogForm.addEventListener(
                 );
 
 
-                catalogMessage.textContent =
-                    "Livro atualizado com sucesso!";
+                setMessage(
+                    catalogMessage,
+                    "Livro atualizado com sucesso!",
+                    "success"
+                );
 
             }
 
 
-            /* =========================================
+            /* =================================================
                CADASTRAR
-            ========================================= */
+            ================================================= */
 
             else {
 
                 bookData.available_copies =
-                    copies;
+                    bookData.total_copies;
+
 
                 bookData.status =
                     "available";
@@ -1535,11 +2362,14 @@ catalogForm.addEventListener(
                 const {
                     data,
                     error
-                } = await db
-                    .from("books")
-                    .insert(bookData)
-                    .select()
-                    .single();
+                } =
+                    await db
+                        .from("books")
+                        .insert(
+                            bookData
+                        )
+                        .select()
+                        .single();
 
 
                 if (error) {
@@ -1553,8 +2383,11 @@ catalogForm.addEventListener(
                 );
 
 
-                catalogMessage.textContent =
-                    "Livro cadastrado com sucesso!";
+                setMessage(
+                    catalogMessage,
+                    "Livro cadastrado com sucesso!",
+                    "success"
+                );
 
             }
 
@@ -1562,19 +2395,31 @@ catalogForm.addEventListener(
             await loadBooks();
 
 
-            setTimeout(() => {
+            setTimeout(
+                () => {
 
-                closeCatalogModalFunction();
+                    closeCatalogModalFunction();
 
-                catalogForm.reset();
 
-                document.getElementById(
-                    "bookCopies"
-                ).value = 1;
+                    catalogForm.reset();
 
-                editingBookId = null;
 
-            }, 1000);
+                    document.getElementById(
+                        "bookCopies"
+                    ).value =
+                        "1";
+
+
+                    editingBookId =
+                        null;
+
+
+                    catalogSubmitButton.textContent =
+                        "Cadastrar livro";
+
+                },
+                900
+            );
 
 
         } catch (error) {
@@ -1585,12 +2430,30 @@ catalogForm.addEventListener(
             );
 
 
-            catalogMessage.textContent =
+            setMessage(
+                catalogMessage,
                 error.message ||
-                "Não foi possível salvar o livro.";
+                "Não foi possível salvar o livro.",
+                "error"
+            );
 
-            catalogMessage.style.color =
-                "#a33";
+        } finally {
+
+            catalogSubmitButton.disabled =
+                false;
+
+
+            if (!editingBookId) {
+
+                catalogSubmitButton.textContent =
+                    "Cadastrar livro";
+
+            } else {
+
+                catalogSubmitButton.textContent =
+                    "Salvar alterações";
+
+            }
 
         }
 
@@ -1602,13 +2465,24 @@ catalogForm.addEventListener(
    EXCLUIR LIVRO
 ========================================================= */
 
-async function deleteBook(bookId) {
+async function deleteBook(
+    bookId
+) {
+
+    if (!currentUserIsAdmin) {
+
+        alert(
+            "Apenas administradores podem excluir livros."
+        );
+
+        return;
+
+    }
+
 
     const book =
-        books.find(
-            item =>
-                String(item.id) ===
-                String(bookId)
+        getBookById(
+            bookId
         );
 
 
@@ -1624,7 +2498,7 @@ async function deleteBook(bookId) {
 
 
     const confirmed =
-        confirm(
+        window.confirm(
             `Tem certeza que deseja excluir "${book.title}"?`
         );
 
@@ -1641,7 +2515,8 @@ async function deleteBook(bookId) {
                 user
             },
             error: userError
-        } = await db.auth.getUser();
+        } =
+            await db.auth.getUser();
 
 
         if (userError) {
@@ -1661,11 +2536,15 @@ async function deleteBook(bookId) {
         const {
             data: profile,
             error: profileError
-        } = await db
-            .from("profiles")
-            .select("role")
-            .eq("id", user.id)
-            .single();
+        } =
+            await db
+                .from("profiles")
+                .select("role")
+                .eq(
+                    "id",
+                    user.id
+                )
+                .maybeSingle();
 
 
         if (profileError) {
@@ -1687,13 +2566,14 @@ async function deleteBook(bookId) {
 
         const {
             error
-        } = await db
-            .from("books")
-            .delete()
-            .eq(
-                "id",
-                bookId
-            );
+        } =
+            await db
+                .from("books")
+                .delete()
+                .eq(
+                    "id",
+                    bookId
+                );
 
 
         if (error) {
@@ -1701,7 +2581,15 @@ async function deleteBook(bookId) {
         }
 
 
-        closeBookDetailsModalFunction();
+        if (
+            selectedBookId &&
+            String(selectedBookId) ===
+            String(bookId)
+        ) {
+
+            closeBookDetailsModalFunction();
+
+        }
 
 
         alert(
@@ -1722,7 +2610,10 @@ async function deleteBook(bookId) {
 
         alert(
             "Não foi possível excluir o livro.\n\n" +
-            error.message
+            (
+                error.message ||
+                "Erro desconhecido."
+            )
         );
 
     }
@@ -1738,68 +2629,100 @@ logoutButton.addEventListener(
     "click",
     async () => {
 
-        const {
-            error
-        } =
-            await db.auth.signOut();
+        logoutButton.disabled =
+            true;
 
 
-        if (error) {
+        logoutButton.textContent =
+            "Saindo...";
+
+
+        try {
+
+            const {
+                error
+            } =
+                await db.auth.signOut();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            setLoggedOutUI();
+
+
+            document.getElementById(
+                "loginEmail"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "loginPassword"
+            ).value =
+                "";
+
+
+            setMessage(
+                loginMessage
+            );
+
+
+            closeSidePanelFunction();
+
+
+        } catch (error) {
 
             console.error(
                 "Erro ao sair:",
                 error
             );
 
-            return;
+
+            alert(
+                "Não foi possível sair da conta.\n\n" +
+                (
+                    error.message ||
+                    "Erro desconhecido."
+                )
+            );
+
+        } finally {
+
+            logoutButton.disabled =
+                false;
+
+            logoutButton.textContent =
+                "Sair da conta";
 
         }
-
-
-        currentUserIsAdmin =
-            false;
-
-
-        loginPanel.style.display =
-            "block";
-
-        adminPanel.style.display =
-            "none";
-
-        sidePanelTitle.textContent =
-            "Entrar";
-
-        loginButton.textContent =
-            "Entrar";
-
-
-        document.getElementById(
-            "loginEmail"
-        ).value = "";
-
-
-        document.getElementById(
-            "loginPassword"
-        ).value = "";
-
-
-        loginMessage.textContent =
-            "";
-
-
-        renderBooks(books);
 
     }
 );
 
 
 /* =========================================================
-   ESC
+   ALTERAÇÕES DE AUTENTICAÇÃO
+========================================================= */
+
+db.auth.onAuthStateChange(
+    async () => {
+
+        await checkUser();
+
+    }
+);
+
+
+/* =========================================================
+   ESC — FECHAR ELEMENTOS
 ========================================================= */
 
 document.addEventListener(
     "keydown",
-    (event) => {
+    event => {
 
         if (
             event.key !== "Escape"
@@ -1854,11 +2777,23 @@ document.addEventListener(
 
 async function initializeApp() {
 
-    await loadCategories();
+    try {
 
-    await loadBooks();
+        await loadCategories();
 
-    await checkUser();
+        await loadBooks();
+
+        await checkUser();
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro durante a inicialização:",
+            error
+        );
+
+    }
 
 }
 

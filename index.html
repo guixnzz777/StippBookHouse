@@ -5,7 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen">
+    <meta
+        name="description"
+        content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen"
+    >
+
+    <meta name="theme-color" content="#315c4c">
 
     <title>Stipp BookHouse</title>
 
@@ -16,15 +21,15 @@
 
     <div id="app">
 
-        <!-- ============================== -->
-        <!-- CABEÇALHO -->
-        <!-- ============================== -->
+        <!-- ==================================================
+             CABEÇALHO
+        ================================================== -->
 
         <header class="site-header">
 
             <div class="brand">
 
-                <div class="brand-mark">
+                <div class="brand-mark" aria-hidden="true">
                     S
                 </div>
 
@@ -35,7 +40,7 @@
 
             </div>
 
-            <nav class="main-nav">
+            <nav class="main-nav" aria-label="Navegação principal">
 
                 <a href="#inicio">
                     Início
@@ -49,7 +54,11 @@
                     Sobre
                 </a>
 
-                <button id="loginButton" class="nav-login-button" type="button">
+                <button
+                    id="loginButton"
+                    class="nav-login-button"
+                    type="button"
+                >
                     Entrar
                 </button>
 
@@ -58,13 +67,15 @@
         </header>
 
 
-        <!-- ============================== -->
-        <!-- CONTEÚDO PRINCIPAL -->
-        <!-- ============================== -->
+        <!-- ==================================================
+             CONTEÚDO PRINCIPAL
+        ================================================== -->
 
         <main>
 
-            <!-- HERO -->
+            <!-- ==================================================
+                 HERO
+            ================================================== -->
 
             <section id="inicio" class="hero">
 
@@ -85,7 +96,10 @@
                         próxima leitura.
                     </p>
 
-                    <a href="#catalogo" class="primary-button">
+                    <a
+                        href="#catalogo"
+                        class="primary-button"
+                    >
                         Explorar catálogo
                     </a>
 
@@ -94,11 +108,14 @@
             </section>
 
 
-            <!-- ============================== -->
-            <!-- CATÁLOGO -->
-            <!-- ============================== -->
+            <!-- ==================================================
+                 CATÁLOGO
+            ================================================== -->
 
-            <section id="catalogo" class="catalog-section">
+            <section
+                id="catalogo"
+                class="catalog-section"
+            >
 
                 <div class="section-heading">
 
@@ -120,24 +137,43 @@
 
                 <div class="catalog-search">
 
-                    <input type="search" id="searchInput" placeholder="Pesquisar livro, autor ou gênero..."
-                        autocomplete="off">
+                    <label
+                        class="visually-hidden"
+                        for="searchInput"
+                    >
+                        Pesquisar no catálogo
+                    </label>
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Pesquisar livro, autor ou gênero..."
+                        autocomplete="off"
+                        aria-label="Pesquisar livro, autor ou gênero"
+                    >
 
                 </div>
 
 
-                <div id="bookGrid" class="book-grid">
+                <div
+                    id="bookGrid"
+                    class="book-grid"
+                    aria-live="polite"
+                >
                     <!-- Livros carregados pelo JavaScript -->
                 </div>
 
             </section>
 
 
-            <!-- ============================== -->
-            <!-- SOBRE -->
-            <!-- ============================== -->
+            <!-- ==================================================
+                 SOBRE
+            ================================================== -->
 
-            <section id="sobre" class="about-section">
+            <section
+                id="sobre"
+                class="about-section"
+            >
 
                 <div class="section-heading">
 
@@ -161,14 +197,23 @@
         </main>
 
 
-        <!-- ============================== -->
-        <!-- PAINEL LATERAL -->
-        <!-- ============================== -->
+        <!-- ==================================================
+             PAINEL LATERAL
+        ================================================== -->
 
-        <div id="sidePanelOverlay" class="side-panel-overlay"></div>
+        <div
+            id="sidePanelOverlay"
+            class="side-panel-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <aside id="sidePanel" class="side-panel">
+        <aside
+            id="sidePanel"
+            class="side-panel"
+            aria-label="Área da conta"
+            aria-hidden="true"
+        >
 
             <div class="side-panel-header">
 
@@ -184,16 +229,21 @@
 
                 </div>
 
-                <button id="closeSidePanel" class="close-side-panel" type="button" aria-label="Fechar painel">
+                <button
+                    id="closeSidePanel"
+                    class="close-side-panel"
+                    type="button"
+                    aria-label="Fechar painel"
+                >
                     ×
                 </button>
 
             </div>
 
 
-            <!-- ============================== -->
-            <!-- LOGIN -->
-            <!-- ============================== -->
+            <!-- ==================================================
+                 LOGIN
+            ================================================== -->
 
             <div id="loginPanel">
 
@@ -203,39 +253,65 @@
                 </p>
 
 
-                <form id="loginForm" class="login-form">
+                <form
+                    id="loginForm"
+                    class="login-form"
+                >
 
                     <label for="loginEmail">
                         E-mail
                     </label>
 
-                    <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="seu@email.com"
+                        autocomplete="email"
+                        required
+                    >
 
 
                     <label for="loginPassword">
                         Senha
                     </label>
 
-                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Sua senha"
+                        autocomplete="current-password"
+                        required
+                    >
 
 
-                    <button type="submit" class="primary-button">
+                    <button
+                        type="submit"
+                        class="primary-button"
+                        id="loginSubmitButton"
+                    >
                         Entrar
                     </button>
 
 
-                    <p id="loginMessage"></p>
+                    <p
+                        id="loginMessage"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
 
                 </form>
 
             </div>
 
 
-            <!-- ============================== -->
-            <!-- PAINEL ADMINISTRATIVO -->
-            <!-- ============================== -->
+            <!-- ==================================================
+                 PAINEL ADMINISTRATIVO
+            ================================================== -->
 
-            <div id="adminPanel" class="admin-panel">
+            <div
+                id="adminPanel"
+                class="admin-panel"
+            >
 
                 <div class="admin-welcome">
 
@@ -256,9 +332,13 @@
 
                 <div class="admin-menu">
 
-                    <button id="showCatalogForm" class="admin-menu-button" type="button">
+                    <button
+                        id="showCatalogForm"
+                        class="admin-menu-button"
+                        type="button"
+                    >
 
-                        <span>
+                        <span aria-hidden="true">
                             📚
                         </span>
 
@@ -279,7 +359,11 @@
                 </div>
 
 
-                <button id="logoutButton" class="secondary-button logout-button" type="button">
+                <button
+                    id="logoutButton"
+                    class="secondary-button logout-button"
+                    type="button"
+                >
                     Sair da conta
                 </button>
 
@@ -287,12 +371,19 @@
 
         </aside>
 
-        <!-- ============================== -->
-        <!-- MODAL DE DETALHES DO LIVRO -->
-        <!-- ============================== -->
 
+        <!-- ==================================================
+             MODAL DE DETALHES DO LIVRO
+        ================================================== -->
 
-        <div id="bookDetailsModal" class="book-details-modal">
+        <div
+            id="bookDetailsModal"
+            class="book-details-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="detailsBookTitle"
+            aria-hidden="true"
+        >
 
             <div class="book-details-overlay"></div>
 
@@ -301,27 +392,49 @@
                 <div class="book-details-header">
 
                     <div>
-                        <span class="eyebrow">Detalhes do livro</span>
-                        <h2 id="detailsBookTitle">Título do livro</h2>
+
+                        <span class="eyebrow">
+                            Detalhes do livro
+                        </span>
+
+                        <h2 id="detailsBookTitle">
+                            Título do livro
+                        </h2>
+
                     </div>
 
-                    <button type="button" id="closeBookDetailsModal" class="close-book-details" aria-label="Fechar">
+                    <button
+                        type="button"
+                        id="closeBookDetailsModal"
+                        class="close-book-details"
+                        aria-label="Fechar detalhes do livro"
+                    >
                         ×
                     </button>
 
                 </div>
 
+
                 <div class="book-details-content">
 
                     <div class="book-details-cover">
 
-                        <img id="detailsBookCover" src="" alt="Capa do livro">
+                        <img
+                            id="detailsBookCover"
+                            src=""
+                            alt=""
+                            style="display: none;"
+                        >
 
-                        <div id="detailsBookCoverPlaceholder" class="book-details-cover-placeholder">
+                        <div
+                            id="detailsBookCoverPlaceholder"
+                            class="book-details-cover-placeholder"
+                        >
                             📖
                         </div>
 
                     </div>
+
 
                     <div class="book-details-info">
 
@@ -379,9 +492,12 @@
 
                 </div>
 
+
                 <div class="book-details-description">
 
-                    <h3>Descrição</h3>
+                    <h3>
+                        Descrição
+                    </h3>
 
                     <p id="detailsBookDescription">
                         Nenhuma descrição informada.
@@ -389,15 +505,28 @@
 
                 </div>
 
+
                 <!-- AÇÕES DO ADMINISTRADOR -->
 
-                <div id="bookAdminActions" class="book-admin-actions" style="display: none;">
+                <div
+                    id="bookAdminActions"
+                    class="book-admin-actions"
+                    style="display: none;"
+                >
 
-                    <button type="button" id="editBookButton" class="secondary-button">
+                    <button
+                        type="button"
+                        id="editBookButton"
+                        class="edit-book-button"
+                    >
                         ✏️ Editar livro
                     </button>
 
-                    <button type="button" id="deleteBookButton" class="delete-book-button">
+                    <button
+                        type="button"
+                        id="deleteBookButton"
+                        class="delete-book-button"
+                    >
                         🗑️ Excluir livro
                     </button>
 
@@ -407,22 +536,31 @@
 
         </div>
 
-        <!-- ============================== -->
-        <!-- MODAL DE CATALOGAÇÃO -->
-        <!-- ============================== -->
 
-        <div id="catalogModal" class="catalog-modal">
+        <!-- ==================================================
+             MODAL DE CATALOGAÇÃO
+        ================================================== -->
+
+        <div
+            id="catalogModal"
+            class="catalog-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="catalogModalTitle"
+            aria-hidden="true"
+        >
 
             <div class="catalog-modal-overlay"></div>
 
 
             <div class="catalog-modal-card">
+
                 <div class="catalog-modal-header">
 
                     <div>
 
                         <span class="eyebrow">
-                            Novo livro
+                            Biblioteca
                         </span>
 
                         <h2 id="catalogModalTitle">
@@ -432,33 +570,44 @@
                     </div>
 
 
-                    <button type="button" id="closeCatalogModal" class="close-catalog-modal" aria-label="Fechar">
+                    <button
+                        type="button"
+                        id="closeCatalogModal"
+                        class="close-catalog-modal"
+                        aria-label="Fechar formulário"
+                    >
                         ×
                     </button>
 
                 </div>
 
 
-                <!-- ÚNICO formulário de catalogação -->
+                <!-- ==================================================
+                     FORMULÁRIO DE CATALOGAÇÃO
+                ================================================== -->
 
-                <form id="catalogForm" class="catalog-form">
+                <form
+                    id="catalogForm"
+                    class="catalog-form"
+                >
 
-<!-- TÍTULO -->
+                    <!-- TÍTULO -->
 
-<div class="form-field full-width">
+                    <div class="form-field full-width">
 
-    <label for="bookTitle">
-        Título *
-    </label>
+                        <label for="bookTitle">
+                            Título *
+                        </label>
 
-    <input
-        type="text"
-        id="bookTitle"
-        placeholder="Título do livro"
-        required
-    >
+                        <input
+                            type="text"
+                            id="bookTitle"
+                            placeholder="Título do livro"
+                            autocomplete="off"
+                            required
+                        >
 
-</div>
+                    </div>
 
 
                     <!-- AUTOR -->
@@ -469,7 +618,13 @@
                             Autor *
                         </label>
 
-                        <input type="text" id="bookAuthor" placeholder="Nome do autor" required>
+                        <input
+                            type="text"
+                            id="bookAuthor"
+                            placeholder="Nome do autor"
+                            autocomplete="off"
+                            required
+                        >
 
                     </div>
 
@@ -482,7 +637,13 @@
                             Tombo *
                         </label>
 
-                        <input type="text" id="bookAssetNumber" placeholder="Ex.: 000123" required>
+                        <input
+                            type="text"
+                            id="bookAssetNumber"
+                            placeholder="Ex.: 000123"
+                            autocomplete="off"
+                            required
+                        >
 
                     </div>
 
@@ -495,7 +656,12 @@
                             ISBN
                         </label>
 
-                        <input type="text" id="bookISBN" placeholder="Ex.: 978-...">
+                        <input
+                            type="text"
+                            id="bookISBN"
+                            placeholder="Ex.: 978-..."
+                            autocomplete="off"
+                        >
 
                     </div>
 
@@ -508,7 +674,12 @@
                             Editora
                         </label>
 
-                        <input type="text" id="bookPublisher" placeholder="Nome da editora">
+                        <input
+                            type="text"
+                            id="bookPublisher"
+                            placeholder="Nome da editora"
+                            autocomplete="off"
+                        >
 
                     </div>
 
@@ -521,7 +692,14 @@
                             Ano de publicação
                         </label>
 
-                        <input type="number" id="bookYear" placeholder="Ex.: 2024" min="0" max="2100">
+                        <input
+                            type="number"
+                            id="bookYear"
+                            placeholder="Ex.: 2024"
+                            min="0"
+                            max="2100"
+                            inputmode="numeric"
+                        >
 
                     </div>
 
@@ -534,27 +712,34 @@
                             Gênero
                         </label>
 
-                        <input type="text" id="bookGenre" placeholder="Ex.: Romance">
+                        <input
+                            type="text"
+                            id="bookGenre"
+                            placeholder="Ex.: Romance"
+                            autocomplete="off"
+                        >
 
                     </div>
 
-<!-- CATEGORIA -->
 
-<div class="form-field full-width">
+                    <!-- CATEGORIA -->
 
-    <label for="bookCategory">
-        Categoria
-    </label>
+                    <div class="form-field full-width">
 
-    <select id="bookCategory">
+                        <label for="bookCategory">
+                            Categoria
+                        </label>
 
-        <option value="">
-            Selecione uma categoria
-        </option>
+                        <select id="bookCategory">
 
-    </select>
+                            <option value="">
+                                Selecione uma categoria
+                            </option>
 
-</div>
+                        </select>
+
+                    </div>
+
 
                     <!-- LOCALIZAÇÃO -->
 
@@ -564,7 +749,12 @@
                             Localização na estante
                         </label>
 
-                        <input type="text" id="bookLocation" placeholder="Ex.: Estante A — Prateleira 2">
+                        <input
+                            type="text"
+                            id="bookLocation"
+                            placeholder="Ex.: Estante A — Prateleira 2"
+                            autocomplete="off"
+                        >
 
                     </div>
 
@@ -577,7 +767,12 @@
                             URL da capa
                         </label>
 
-                        <input type="url" id="bookCover" placeholder="https://...">
+                        <input
+                            type="url"
+                            id="bookCover"
+                            placeholder="https://..."
+                            autocomplete="off"
+                        >
 
                     </div>
 
@@ -590,7 +785,11 @@
                             Descrição
                         </label>
 
-                        <textarea id="bookDescription" placeholder="Descrição do livro..." rows="4"></textarea>
+                        <textarea
+                            id="bookDescription"
+                            placeholder="Descrição do livro..."
+                            rows="4"
+                        ></textarea>
 
                     </div>
 
@@ -603,7 +802,15 @@
                             Exemplares *
                         </label>
 
-                        <input type="number" id="bookCopies" value="1" min="1" required>
+                        <input
+                            type="number"
+                            id="bookCopies"
+                            value="1"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            required
+                        >
 
                     </div>
 
@@ -612,19 +819,31 @@
 
                     <div class="catalog-form-actions">
 
-                        <button type="button" id="cancelCatalogModal" class="secondary-button">
+                        <button
+                            type="button"
+                            id="cancelCatalogModal"
+                            class="secondary-button"
+                        >
                             Cancelar
                         </button>
 
 
-                        <button type="submit" class="primary-button">
+                        <button
+                            type="submit"
+                            id="catalogSubmitButton"
+                            class="primary-button"
+                        >
                             Cadastrar livro
                         </button>
 
                     </div>
 
 
-                    <p id="catalogMessage"></p>
+                    <p
+                        id="catalogMessage"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
 
                 </form>
 
@@ -633,9 +852,9 @@
         </div>
 
 
-        <!-- ============================== -->
-        <!-- RODAPÉ -->
-        <!-- ============================== -->
+        <!-- ==================================================
+             RODAPÉ
+        ================================================== -->
 
         <footer class="site-footer">
 
@@ -652,11 +871,15 @@
     </div>
 
 
-    <!-- SUPABASE -->
+    <!-- ==================================================
+         SUPABASE
+    ================================================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- JAVASCRIPT DO SITE -->
+    <!-- ==================================================
+         JAVASCRIPT DO SITE
+    ================================================== -->
 
     <script src="script.js"></script>
 
