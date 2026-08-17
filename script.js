@@ -1,211 +1,378 @@
-const SUPABASE_URL = "https://frtgxcpyhvzwwvdmuhts.supabase.co";
-const SUPABASE_KEY = "sb_publishable_eCoQvkELqyJoLnhyBWqx6A_yCP7XGFp";
+const SUPABASE_URL =
+    "https://frtgxcpyhvzwwvdmuhts.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_eCoQvkELqyJoLnhyBWqx6A_yCP7XGFp";
+
+
+/* ==============================
+   SUPABASE
+============================== */
 
 const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const bookGrid = document.getElementById("bookGrid");
-const searchInput = document.getElementById("searchInput");
+const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* ==============================
+   CATÁLOGO
+============================== */
+
+const bookGrid =
+    document.getElementById("bookGrid");
+
+const searchInput =
+    document.getElementById("searchInput");
 
 let books = [];
 
+
 function renderBooks(list) {
+
     bookGrid.innerHTML = "";
 
+
     if (list.length === 0) {
+
         bookGrid.innerHTML = `
             <p>Nenhum livro encontrado.</p>
         `;
+
         return;
     }
 
+
     list.forEach((book) => {
-        const card = document.createElement("article");
 
-        card.className = "book-card";
+        const card =
+            document.createElement("article");
 
-       card.innerHTML = `
-    <div class="book-cover">
-        ${
-            book.cover_url
-                ? `<img src="${book.cover_url}" alt="Capa de ${book.title}">`
-                : "📖"
-        }
-    </div>
+        card.className =
+            "book-card";
 
-    <div class="book-info">
-        <h3>${book.title}</h3>
 
-        <p class="book-author">
-            ${book.author}
-        </p>
+        card.innerHTML = `
 
-        <p class="book-genre">
-            ${book.genre || "Sem gênero informado"}
-        </p>
+            <div class="book-cover">
 
-        <div class="book-details">
-            ${
-                book.publication_year
-                    ? `<span>${book.publication_year}</span>`
-                    : ""
-            }
-
-            <span>
                 ${
-                    book.available_copies > 0
-                        ? "Disponível"
-                        : "Indisponível"
-                }
-            </span>
-        </div>
+                    book.cover_url
 
-        <p class="book-copies">
-            ${book.available_copies} de ${book.total_copies} exemplar(es) disponível(is)
-        </p>
-    </div>
-`;
+                    ? `
+                        <img
+                            src="${book.cover_url}"
+                            alt="Capa de ${book.title}"
+                        >
+                    `
+
+                    : "📖"
+                }
+
+            </div>
+
+
+            <div class="book-info">
+
+                <h3>
+                    ${book.title}
+                </h3>
+
+
+                <p class="book-author">
+                    ${book.author}
+                </p>
+
+
+                <p class="book-genre">
+                    ${book.genre || "Sem gênero informado"}
+                </p>
+
+
+                <div class="book-details">
+
+                    ${
+                        book.publication_year
+                        ? `
+                            <span>
+                                ${book.publication_year}
+                            </span>
+                        `
+                        : ""
+                    }
+
+
+                    <span>
+
+                        ${
+                            book.available_copies > 0
+                            ? "Disponível"
+                            : "Indisponível"
+                        }
+
+                    </span>
+
+                </div>
+
+
+                <p class="book-copies">
+
+                    ${book.available_copies}
+                    de
+                    ${book.total_copies}
+                    exemplar(es) disponível(is)
+
+                </p>
+
+            </div>
+
+        `;
+
 
         bookGrid.appendChild(card);
+
     });
+
 }
 
+
+/* ==============================
+   CARREGAR LIVROS
+============================== */
+
 async function loadBooks() {
+
     bookGrid.innerHTML = `
         <p>Carregando catálogo...</p>
     `;
 
+
     try {
-        const { data, error } = await db
+
+        const {
+            data,
+            error
+        } = await db
             .from("books")
             .select("*")
-            .order("title", { ascending: true });
+            .order(
+                "title",
+                {
+                    ascending: true
+                }
+            );
+
 
         if (error) {
             throw error;
         }
 
+
         books = data || [];
+
 
         renderBooks(books);
 
+
     } catch (error) {
-        console.error("Erro ao carregar livros:", error);
+
+        console.error(
+            "Erro ao carregar livros:",
+            error
+        );
+
 
         bookGrid.innerHTML = `
-            <p>Erro ao carregar catálogo.</p>
-            <p>${error.message}</p>
+
+            <p>
+                Erro ao carregar catálogo.
+            </p>
+
+            <p>
+                ${error.message}
+            </p>
+
         `;
+
     }
+
 }
+
+
+/* ==============================
+   PESQUISA
+============================== */
 
 function searchBooks() {
-    const query = searchInput.value
-        .toLowerCase()
-        .trim();
 
-    const filteredBooks = books.filter((book) => {
-        return (
-            book.title.toLowerCase().includes(query) ||
-            book.author.toLowerCase().includes(query) ||
-            (book.genre || "").toLowerCase().includes(query)
-        );
-    });
+    const query =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    const filteredBooks =
+        books.filter((book) => {
+
+            return (
+
+                book.title
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                book.author
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                (book.genre || "")
+                    .toLowerCase()
+                    .includes(query)
+
+            );
+
+        });
+
 
     renderBooks(filteredBooks);
+
 }
 
-searchInput.addEventListener("input", searchBooks);
+
+searchInput.addEventListener(
+    "input",
+    searchBooks
+);
+
 
 loadBooks();
 
-const loginForm = document.getElementById("loginForm");
-const loginMessage = document.getElementById("loginMessage");
 
-if (loginForm) {
-    loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
+/* ==============================
+   ELEMENTOS DE AUTENTICAÇÃO
+============================== */
 
-        const email = document.getElementById("loginEmail").value;
-        const password = document.getElementById("loginPassword").value;
+const loginButton =
+    document.getElementById(
+        "loginButton"
+    );
 
-        loginMessage.textContent = "Entrando...";
+const loginForm =
+    document.getElementById(
+        "loginForm"
+    );
 
-        const { data, error } = await db.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
+const loginMessage =
+    document.getElementById(
+        "loginMessage"
+    );
 
-        if (error) {
-            console.error("Erro no login:", error);
-            loginMessage.textContent = "E-mail ou senha incorretos.";
-            return;
-        }
+const loginPanel =
+    document.getElementById(
+        "loginPanel"
+    );
 
-        loginMessage.textContent = "Login realizado com sucesso!";
+const adminPanel =
+    document.getElementById(
+        "adminPanel"
+    );
 
-        console.log("Usuário conectado:", data.user);
+const adminUserName =
+    document.getElementById(
+        "adminUserName"
+    );
 
-        setTimeout(() => {
-            window.location.href = "#catalogo";
-        }, 1000);
-    });
-}
+const sidePanelTitle =
+    document.getElementById(
+        "sidePanelTitle"
+    );
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
 
 
+/* ==============================
+   PAINEL LATERAL
+============================== */
 
-// ==============================
-// PAINEL LATERAL E AUTENTICAÇÃO
-// ==============================
+const sidePanel =
+    document.getElementById(
+        "sidePanel"
+    );
 
-const loginButton = document.getElementById("loginButton");
-const sidePanel = document.getElementById("sidePanel");
-const sidePanelOverlay = document.getElementById("sidePanelOverlay");
-const closeSidePanel = document.getElementById("closeSidePanel");
+const sidePanelOverlay =
+    document.getElementById(
+        "sidePanelOverlay"
+    );
 
-const loginPanel = document.getElementById("loginPanel");
-const adminPanel = document.getElementById("adminPanel");
+const closeSidePanel =
+    document.getElementById(
+        "closeSidePanel"
+    );
 
-const sidePanelTitle = document.getElementById("sidePanelTitle");
-const adminUserName = document.getElementById("adminUserName");
-
-const logoutButton = document.getElementById("logoutButton");
-const showCatalogForm = document.getElementById("showCatalogForm");
 
 function openSidePanel() {
-    sidePanel.classList.add("active");
-    sidePanelOverlay.classList.add("active");
-    document.body.classList.add("panel-open");
+
+    sidePanel.classList.add(
+        "active"
+    );
+
+    sidePanelOverlay.classList.add(
+        "active"
+    );
+
+    document.body.classList.add(
+        "panel-open"
+    );
+
 }
+
 
 function closeSidePanelFunction() {
-    sidePanel.classList.remove("active");
-    sidePanelOverlay.classList.remove("active");
-    document.body.classList.remove("panel-open");
-}
 
-if (loginButton) {
-    loginButton.addEventListener("click", openSidePanel);
-}
-
-if (closeSidePanel) {
-    closeSidePanel.addEventListener(
-        "click",
-        closeSidePanelFunction
+    sidePanel.classList.remove(
+        "active"
     );
-}
 
-if (sidePanelOverlay) {
-    sidePanelOverlay.addEventListener(
-        "click",
-        closeSidePanelFunction
+    sidePanelOverlay.classList.remove(
+        "active"
     );
+
+    document.body.classList.remove(
+        "panel-open"
+    );
+
 }
 
 
-// ==============================
-// VERIFICAR USUÁRIO
-// ==============================
+loginButton.addEventListener(
+    "click",
+    openSidePanel
+);
+
+
+closeSidePanel.addEventListener(
+    "click",
+    closeSidePanelFunction
+);
+
+
+sidePanelOverlay.addEventListener(
+    "click",
+    closeSidePanelFunction
+);
+
+
+/* ==============================
+   VERIFICAR USUÁRIO
+============================== */
 
 async function checkUser() {
 
@@ -213,23 +380,45 @@ async function checkUser() {
         data: { user }
     } = await db.auth.getUser();
 
-    // Usuário não está logado
+
+    /* ------------------------------
+       NÃO LOGADO
+    ------------------------------ */
+
     if (!user) {
 
-        loginPanel.style.display = "block";
-        adminPanel.style.display = "none";
+        loginPanel.style.display =
+            "block";
 
-        sidePanelTitle.textContent = "Entrar";
+        adminPanel.style.display =
+            "none";
+
+        sidePanelTitle.textContent =
+            "Entrar";
+
+        loginButton.textContent =
+            "Entrar";
 
         return;
     }
 
 
-    // Buscar perfil
-    const { data: profile, error } = await db
+    /* ------------------------------
+       BUSCAR PERFIL
+    ------------------------------ */
+
+    const {
+        data: profile,
+        error
+    } = await db
         .from("profiles")
-        .select("full_name, role")
-        .eq("id", user.id)
+        .select(
+            "full_name, role"
+        )
+        .eq(
+            "id",
+            user.id
+        )
         .single();
 
 
@@ -244,17 +433,28 @@ async function checkUser() {
     }
 
 
-    // Usuário administrador
-    if (profile.role === "admin") {
+    /* ------------------------------
+       ADMINISTRADOR
+    ------------------------------ */
 
-        loginPanel.style.display = "none";
-        adminPanel.style.display = "block";
+    if (
+        profile.role === "admin"
+    ) {
+
+        loginPanel.style.display =
+            "none";
+
+        adminPanel.style.display =
+            "block";
 
         sidePanelTitle.textContent =
             "Painel da biblioteca";
 
+
         adminUserName.textContent =
-            profile.full_name || "Administrador";
+            profile.full_name ||
+            "Administrador";
+
 
         loginButton.textContent =
             "Painel";
@@ -263,225 +463,281 @@ async function checkUser() {
     }
 
 
-    // Usuário autenticado, mas sem permissão administrativa
+    /* ------------------------------
+       USUÁRIO NORMAL
+    ------------------------------ */
 
-    loginPanel.style.display = "none";
-    adminPanel.style.display = "none";
+    loginPanel.style.display =
+        "none";
+
+    adminPanel.style.display =
+        "none";
 
     sidePanelTitle.textContent =
         "Conta";
 
     loginButton.textContent =
         "Minha conta";
+
 }
 
 
-// ==============================
-// LOGIN
-// ==============================
+/* ==============================
+   LOGIN
+============================== */
 
-if (loginForm) {
+loginForm.addEventListener(
+    "submit",
+    async (event) => {
 
-    loginForm.addEventListener(
-        "submit",
-        async (event) => {
+        event.preventDefault();
 
-            event.preventDefault();
 
-            const email =
-                document.getElementById(
-                    "loginEmail"
-                ).value;
+        const email =
+            document.getElementById(
+                "loginEmail"
+            ).value.trim();
 
-            const password =
-                document.getElementById(
-                    "loginPassword"
-                ).value;
+
+        const password =
+            document.getElementById(
+                "loginPassword"
+            ).value;
+
+
+        loginMessage.textContent =
+            "Entrando...";
+
+
+        const {
+            data,
+            error
+        } = await db.auth.signInWithPassword({
+
+            email:
+                email,
+
+            password:
+                password
+
+        });
+
+
+        if (error) {
+
+            console.error(
+                "Erro no login:",
+                error
+            );
+
 
             loginMessage.textContent =
-                "Entrando...";
+                "E-mail ou senha incorretos.";
 
-
-            const { data, error } =
-                await db.auth.signInWithPassword({
-                    email,
-                    password
-                });
-
-
-            if (error) {
-
-                console.error(
-                    "Erro no login:",
-                    error
-                );
-
-                loginMessage.textContent =
-                    "E-mail ou senha incorretos.";
-
-                return;
-            }
-
-
-            loginMessage.textContent =
-                "Login realizado com sucesso!";
-
-
-            await checkUser();
-
-
-            setTimeout(() => {
-
-                loginMessage.textContent = "";
-
-            }, 1000);
+            return;
         }
-    );
-}
 
-// ==============================
-// MODAL DE CATALOGAÇÃO
-// ==============================
+
+        console.log(
+            "Usuário conectado:",
+            data.user
+        );
+
+
+        loginMessage.textContent =
+            "Login realizado com sucesso!";
+
+
+        await checkUser();
+
+
+        setTimeout(() => {
+
+            loginMessage.textContent =
+                "";
+
+        }, 1000);
+
+    }
+);
+
+
+/* ==============================
+   MODAL DE CATALOGAÇÃO
+============================== */
+
+const showCatalogForm =
+    document.getElementById(
+        "showCatalogForm"
+    );
 
 const catalogModal =
-    document.getElementById("catalogModal");
+    document.getElementById(
+        "catalogModal"
+    );
 
 const closeCatalogModal =
-    document.getElementById("closeCatalogModal");
+    document.getElementById(
+        "closeCatalogModal"
+    );
 
 const cancelCatalogModal =
-    document.getElementById("cancelCatalogModal");
+    document.getElementById(
+        "cancelCatalogModal"
+    );
 
 const catalogModalOverlay =
-    document.querySelector(".catalog-modal-overlay");
+    document.querySelector(
+        ".catalog-modal-overlay"
+    );
 
 
 function openCatalogModal() {
 
-    if (!catalogModal) return;
+    catalogModal.classList.add(
+        "active"
+    );
 
-    catalogModal.classList.add("active");
+    document.body.classList.add(
+        "modal-open"
+    );
 
-    document.body.classList.add("modal-open");
 }
 
 
 function closeCatalogModalFunction() {
 
-    if (!catalogModal) return;
+    catalogModal.classList.remove(
+        "active"
+    );
 
-    catalogModal.classList.remove("active");
-
-    document.body.classList.remove("modal-open");
-}
-
-
-if (showCatalogForm) {
-
-    showCatalogForm.addEventListener(
-        "click",
-        openCatalogModal
+    document.body.classList.remove(
+        "modal-open"
     );
 
 }
 
 
-if (closeCatalogModal) {
-
-    closeCatalogModal.addEventListener(
-        "click",
-        closeCatalogModalFunction
-    );
-
-}
+showCatalogForm.addEventListener(
+    "click",
+    openCatalogModal
+);
 
 
-if (cancelCatalogModal) {
-
-    cancelCatalogModal.addEventListener(
-        "click",
-        closeCatalogModalFunction
-    );
-
-}
+closeCatalogModal.addEventListener(
+    "click",
+    closeCatalogModalFunction
+);
 
 
-if (catalogModalOverlay) {
+cancelCatalogModal.addEventListener(
+    "click",
+    closeCatalogModalFunction
+);
 
-    catalogModalOverlay.addEventListener(
-        "click",
-        closeCatalogModalFunction
-    );
 
-}
+catalogModalOverlay.addEventListener(
+    "click",
+    closeCatalogModalFunction
+);
 
+
+/* ==============================
+   ESC FECHA O MODAL / PAINEL
+============================== */
 
 document.addEventListener(
     "keydown",
     (event) => {
 
         if (
-            event.key === "Escape" &&
-            catalogModal &&
-            catalogModal.classList.contains("active")
+            event.key === "Escape"
         ) {
 
-            closeCatalogModalFunction();
+            if (
+                catalogModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                closeCatalogModalFunction();
+
+                return;
+            }
+
+
+            if (
+                sidePanel.classList.contains(
+                    "active"
+                )
+            ) {
+
+                closeSidePanelFunction();
+
+            }
 
         }
 
     }
 );
 
-// ==============================
-// LOGOUT
-// ==============================
 
-if (logoutButton) {
+/* ==============================
+   LOGOUT
+============================== */
 
-    logoutButton.addEventListener(
-        "click",
-        async () => {
+logoutButton.addEventListener(
+    "click",
+    async () => {
 
-            const { error } =
-                await db.auth.signOut();
-
-
-            if (error) {
-
-                console.error(
-                    "Erro ao sair:",
-                    error
-                );
-
-                return;
-            }
+        const {
+            error
+        } = await db.auth.signOut();
 
 
-            loginPanel.style.display =
-                "block";
+        if (error) {
 
-            adminPanel.style.display =
-                "none";
+            console.error(
+                "Erro ao sair:",
+                error
+            );
 
-            sidePanelTitle.textContent =
-                "Entrar";
-
-            loginButton.textContent =
-                "Entrar";
-
-            document.getElementById(
-                "loginEmail"
-            ).value = "";
-
-            document.getElementById(
-                "loginPassword"
-            ).value = "";
-
+            return;
         }
-    );
-}
 
 
-// Verificar sessão ao carregar
+        loginPanel.style.display =
+            "block";
+
+        adminPanel.style.display =
+            "none";
+
+        sidePanelTitle.textContent =
+            "Entrar";
+
+        loginButton.textContent =
+            "Entrar";
+
+
+        document.getElementById(
+            "loginEmail"
+        ).value = "";
+
+
+        document.getElementById(
+            "loginPassword"
+        ).value = "";
+
+
+        loginMessage.textContent =
+            "";
+
+    }
+);
+
+
+/* ==============================
+   VERIFICAR SESSÃO AO CARREGAR
+============================== */
+
 checkUser();
