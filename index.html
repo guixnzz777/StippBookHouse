@@ -443,20 +443,22 @@
 
                 <form id="catalogForm" class="catalog-form">
 
-                    <!-- TÍTULO -->
-                    <div class="form-field full-width">
+<!-- TÍTULO -->
 
-                        <label for="bookCategory">
-                            Categoria
-                        </label>
+<div class="form-field full-width">
 
-                        <select id="bookCategory">
-                            <option value="">
-                                Selecione uma categoria
-                            </option>
-                        </select>
+    <label for="bookTitle">
+        Título *
+    </label>
 
-                    </div>
+    <input
+        type="text"
+        id="bookTitle"
+        placeholder="Título do livro"
+        required
+    >
+
+</div>
 
 
                     <!-- AUTOR -->
@@ -536,19 +538,23 @@
 
                     </div>
 
+<!-- CATEGORIA -->
 
-                    <!-- CATEGORIA -->
+<div class="form-field full-width">
 
-                    <div class="form-field full-width">
+    <label for="bookCategory">
+        Categoria
+    </label>
 
-                        <label for="bookCategory">
-                            Categoria
-                        </label>
+    <select id="bookCategory">
 
-                        <input type="text" id="bookCategory" placeholder="Categoria do livro">
+        <option value="">
+            Selecione uma categoria
+        </option>
 
-                    </div>
+    </select>
 
+</div>
 
                     <!-- LOCALIZAÇÃO -->
 
