@@ -101,8 +101,56 @@ const isbnScannerMessage =
 
 
 let isbnScannerInstance = null;
-
 let isbnScannerRunning = false;
+
+
+/* =========================================================
+   CONTROLE DE LEITURAS
+========================================================= */
+
+let lastScannedISBN = "";
+let consecutiveReads = 0;
+
+
+/* =========================================================
+   VALIDAR ISBN-13
+========================================================= */
+
+function isValidISBN13(isbn) {
+
+    // Deve possuir exatamente 13 números
+    if (!/^\d{13}$/.test(isbn)) {
+        return false;
+    }
+
+    // ISBN-13 começa obrigatoriamente com 978 ou 979
+    if (
+        !isbn.startsWith("978") &&
+        !isbn.startsWith("979")
+    ) {
+        return false;
+    }
+
+    let sum = 0;
+
+    for (let i = 0; i < 12; i++) {
+
+        const digit = Number(isbn[i]);
+
+        sum +=
+            i % 2 === 0
+                ? digit
+                : digit * 3;
+
+    }
+
+    const checkDigit =
+        (10 - (sum % 10)) % 10;
+
+    return (
+        checkDigit === Number(isbn[12])
+    );
+}
 
 
 /* =========================================================
@@ -116,7 +164,12 @@ async function openISBNScanner() {
     );
 
     isbnScannerMessage.textContent =
-        "Aponte a câmera para o código de barras...";
+        "Aponte a câmera para o código de barras do livro.";
+
+
+    // Reset das leituras
+    lastScannedISBN = "";
+    consecutiveReads = 0;
 
 
     isbnScannerInstance =
@@ -128,18 +181,23 @@ async function openISBNScanner() {
         await isbnScannerInstance.start(
 
             {
-                facingMode: "environment"
+                facingMode: {
+                    exact: "environment"
+                }
             },
 
             {
 
-                fps: 10,
+                // Mais quadros analisados por segundo
+                fps: 15,
 
+                // Área de leitura
                 qrbox: {
-                    width: 280,
-                    height: 120
+                    width: 320,
+                    height: 140
                 },
 
+                // Somente EAN-13
                 formatsToSupport: [
                     Html5QrcodeSupportedFormats.EAN_13
                 ]
@@ -148,8 +206,61 @@ async function openISBNScanner() {
 
             (decodedText) => {
 
+                /*
+                 * Remove qualquer caractere que não seja número.
+                 */
+                const isbn =
+                    decodedText.replace(/\D/g, "");
+
+
                 /* =========================================
-                   ISBN ENCONTRADO
+                   VALIDAR ISBN
+                ========================================= */
+
+                if (!isValidISBN13(isbn)) {
+
+                    consecutiveReads = 0;
+                    lastScannedISBN = "";
+
+                    isbnScannerMessage.textContent =
+                        "Código detectado, mas não parece ser um ISBN válido.";
+
+                    return;
+                }
+
+
+                /* =========================================
+                   CONFIRMAR LEITURA
+                ========================================= */
+
+                if (isbn === lastScannedISBN) {
+
+                    consecutiveReads++;
+
+                } else {
+
+                    lastScannedISBN = isbn;
+                    consecutiveReads = 1;
+
+                }
+
+
+                /* =========================================
+                   MOSTRAR PROGRESSO
+                ========================================= */
+
+                if (consecutiveReads < 3) {
+
+                    isbnScannerMessage.textContent =
+                        `ISBN detectado. Confirme a leitura... ` +
+                        `${consecutiveReads}/3`;
+
+                    return;
+                }
+
+
+                /* =========================================
+                   ISBN CONFIRMADO
                 ========================================= */
 
                 const isbnInput =
@@ -158,12 +269,11 @@ async function openISBNScanner() {
                     );
 
 
-                isbnInput.value =
-                    decodedText;
+                isbnInput.value = isbn;
 
 
                 isbnScannerMessage.textContent =
-                    "ISBN identificado!";
+                    "ISBN confirmado!";
 
 
                 stopISBNScanner();
@@ -173,16 +283,15 @@ async function openISBNScanner() {
 
                     closeISBNScannerModal();
 
-                }, 400);
+                }, 500);
 
             },
 
             () => {
 
                 /*
-                   Erros de leitura são ignorados.
-                   O scanner continua procurando.
-                */
+                 * Erros normais de leitura são ignorados.
+                 */
 
             }
 
