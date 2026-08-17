@@ -418,8 +418,7 @@ async function openISBNScanner() {
 
             },
 
-            (decodedText) => {
-
+async (decodedText) => {
                 /*
                  * Remove qualquer caractere que não seja número.
                  */
