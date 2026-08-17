@@ -1,13 +1,13 @@
+/* ==================================================
+   SUPABASE
+================================================== */
+
 const SUPABASE_URL =
     "https://frtgxcpyhvzwwvdmuhts.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable_eCoQvkELqyJoLnhyBWqx6A_yCP7XGFp";
 
-
-/* ==============================
-   SUPABASE
-============================== */
 
 const { createClient } = supabase;
 
@@ -17,9 +17,9 @@ const db = createClient(
 );
 
 
-/* ==============================
+/* ==================================================
    CATÁLOGO
-============================== */
+================================================== */
 
 const bookGrid =
     document.getElementById("bookGrid");
@@ -29,6 +29,10 @@ const searchInput =
 
 let books = [];
 
+
+/* ==================================================
+   RENDERIZAR LIVROS
+================================================== */
 
 function renderBooks(list) {
 
@@ -138,9 +142,9 @@ function renderBooks(list) {
 }
 
 
-/* ==============================
+/* ==================================================
    CARREGAR LIVROS
-============================== */
+================================================== */
 
 async function loadBooks() {
 
@@ -201,9 +205,9 @@ async function loadBooks() {
 }
 
 
-/* ==============================
+/* ==================================================
    PESQUISA
-============================== */
+================================================== */
 
 function searchBooks() {
 
@@ -234,6 +238,12 @@ function searchBooks() {
                     .toLowerCase()
                     .includes(query)
 
+                ||
+
+                (book.asset_number || "")
+                    .toLowerCase()
+                    .includes(query)
+
             );
 
         });
@@ -253,9 +263,9 @@ searchInput.addEventListener(
 loadBooks();
 
 
-/* ==============================
+/* ==================================================
    ELEMENTOS DE AUTENTICAÇÃO
-============================== */
+================================================== */
 
 const loginButton =
     document.getElementById(
@@ -298,9 +308,9 @@ const logoutButton =
     );
 
 
-/* ==============================
+/* ==================================================
    PAINEL LATERAL
-============================== */
+================================================== */
 
 const sidePanel =
     document.getElementById(
@@ -370,9 +380,9 @@ sidePanelOverlay.addEventListener(
 );
 
 
-/* ==============================
+/* ==================================================
    VERIFICAR USUÁRIO
-============================== */
+================================================== */
 
 async function checkUser() {
 
@@ -381,9 +391,9 @@ async function checkUser() {
     } = await db.auth.getUser();
 
 
-    /* ------------------------------
+    /* ----------------------------------------------
        NÃO LOGADO
-    ------------------------------ */
+    ---------------------------------------------- */
 
     if (!user) {
 
@@ -403,9 +413,9 @@ async function checkUser() {
     }
 
 
-    /* ------------------------------
+    /* ----------------------------------------------
        BUSCAR PERFIL
-    ------------------------------ */
+    ---------------------------------------------- */
 
     const {
         data: profile,
@@ -433,9 +443,9 @@ async function checkUser() {
     }
 
 
-    /* ------------------------------
+    /* ----------------------------------------------
        ADMINISTRADOR
-    ------------------------------ */
+    ---------------------------------------------- */
 
     if (
         profile.role === "admin"
@@ -463,9 +473,9 @@ async function checkUser() {
     }
 
 
-    /* ------------------------------
+    /* ----------------------------------------------
        USUÁRIO NORMAL
-    ------------------------------ */
+    ---------------------------------------------- */
 
     loginPanel.style.display =
         "none";
@@ -482,9 +492,9 @@ async function checkUser() {
 }
 
 
-/* ==============================
+/* ==================================================
    LOGIN
-============================== */
+================================================== */
 
 loginForm.addEventListener(
     "submit",
@@ -562,9 +572,9 @@ loginForm.addEventListener(
 );
 
 
-/* ==============================
+/* ==================================================
    MODAL DE CATALOGAÇÃO
-============================== */
+================================================== */
 
 const showCatalogForm =
     document.getElementById(
@@ -642,242 +652,399 @@ catalogModalOverlay.addEventListener(
 );
 
 
+/* ==================================================
+   CADASTRO DE LIVROS
+================================================== */
 
-// ==============================
-// CADASTRO DE LIVROS
-// ==============================
+const catalogForm =
+    document.getElementById(
+        "catalogForm"
+    );
 
-const catalogForm = document.getElementById("catalogForm");
-const catalogMessage = document.getElementById("catalogMessage");
+const catalogMessage =
+    document.getElementById(
+        "catalogMessage"
+    );
+
 
 if (catalogForm) {
 
-    catalogForm.addEventListener("submit", async (event) => {
+    catalogForm.addEventListener(
+        "submit",
+        async (event) => {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        catalogMessage.textContent = "Cadastrando livro...";
-        catalogMessage.style.color = "";
 
-        try {
+            catalogMessage.textContent =
+                "Cadastrando livro...";
 
-            // Verificar usuário logado
-            const {
-                data: { user },
-                error: userError
-            } = await db.auth.getUser();
+            catalogMessage.style.color =
+                "";
 
-            if (userError) {
-                throw userError;
-            }
 
-            if (!user) {
-                throw new Error("Nenhum usuário está autenticado.");
-            }
+            try {
 
-            // Verificar perfil
-            const { data: profile, error: profileError } = await db
-                .from("profiles")
-                .select("role")
-                .eq("id", user.id)
-                .single();
+                /* ----------------------------------
+                   VERIFICAR USUÁRIO
+                ---------------------------------- */
 
-            if (profileError) {
-                throw profileError;
-            }
+                const {
+                    data: {
+                        user
+                    },
+                    error: userError
+                } = await db.auth.getUser();
 
-            if (!profile || profile.role !== "admin") {
-                throw new Error(
-                    "Este usuário não possui permissão de administrador."
+
+                if (userError) {
+                    throw userError;
+                }
+
+
+                if (!user) {
+
+                    throw new Error(
+                        "Nenhum usuário está autenticado."
+                    );
+
+                }
+
+
+                /* ----------------------------------
+                   VERIFICAR PERFIL
+                ---------------------------------- */
+
+                const {
+                    data: profile,
+                    error: profileError
+                } = await db
+                    .from("profiles")
+                    .select("role")
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .single();
+
+
+                if (profileError) {
+                    throw profileError;
+                }
+
+
+                if (
+                    !profile ||
+                    profile.role !== "admin"
+                ) {
+
+                    throw new Error(
+                        "Este usuário não possui permissão de administrador."
+                    );
+
+                }
+
+
+                /* ----------------------------------
+                   PEGAR DADOS
+                ---------------------------------- */
+
+                const title =
+                    document.getElementById(
+                        "bookTitle"
+                    ).value.trim();
+
+
+                const author =
+                    document.getElementById(
+                        "bookAuthor"
+                    ).value.trim();
+
+
+                const assetNumber =
+                    document.getElementById(
+                        "bookAssetNumber"
+                    ).value.trim();
+
+
+                const isbn =
+                    document.getElementById(
+                        "bookISBN"
+                    ).value.trim();
+
+
+                const publisher =
+                    document.getElementById(
+                        "bookPublisher"
+                    ).value.trim();
+
+
+                const year =
+                    document.getElementById(
+                        "bookYear"
+                    ).value;
+
+
+                const genre =
+                    document.getElementById(
+                        "bookGenre"
+                    ).value.trim();
+
+
+                const location =
+                    document.getElementById(
+                        "bookLocation"
+                    ).value.trim();
+
+
+                const cover =
+                    document.getElementById(
+                        "bookCover"
+                    ).value.trim();
+
+
+                const description =
+                    document.getElementById(
+                        "bookDescription"
+                    ).value.trim();
+
+
+                const copies =
+                    Number(
+                        document.getElementById(
+                            "bookCopies"
+                        ).value
+                    );
+
+
+                /* ----------------------------------
+                   VALIDAÇÃO
+                ---------------------------------- */
+
+                if (
+                    !title ||
+                    !author
+                ) {
+
+                    throw new Error(
+                        "Título e autor são obrigatórios."
+                    );
+
+                }
+
+
+                if (!assetNumber) {
+
+                    throw new Error(
+                        "O tombo do livro é obrigatório."
+                    );
+
+                }
+
+
+                if (
+                    !copies ||
+                    copies < 1
+                ) {
+
+                    throw new Error(
+                        "A quantidade de exemplares deve ser pelo menos 1."
+                    );
+
+                }
+
+
+                /* ----------------------------------
+                   OBJETO DO LIVRO
+                ---------------------------------- */
+
+                const bookData = {
+
+                    title:
+                        title,
+
+                    author:
+                        author,
+
+                    asset_number:
+                        assetNumber,
+
+                    isbn:
+                        isbn || null,
+
+                    publisher:
+                        publisher || null,
+
+                    publication_year:
+                        year
+                            ? Number(year)
+                            : null,
+
+                    genre:
+                        genre || null,
+
+                    description:
+                        description || null,
+
+                    cover_url:
+                        cover || null,
+
+                    shelf_location:
+                        location || null,
+
+                    total_copies:
+                        copies,
+
+                    available_copies:
+                        copies,
+
+                    status:
+                        "available"
+
+                };
+
+
+                console.log(
+                    "Tentando cadastrar:",
+                    bookData
                 );
-            }
 
-            // Pegar dados do formulário
-            const title =
-                document.getElementById("bookTitle").value.trim();
 
-            const author =
-                document.getElementById("bookAuthor").value.trim();
+                /* ----------------------------------
+                   INSERIR NO SUPABASE
+                ---------------------------------- */
 
-            const isbn =
-                document.getElementById("bookISBN").value.trim();
+                const {
+                    data,
+                    error
+                } = await db
+                    .from("books")
+                    .insert(bookData)
+                    .select()
+                    .single();
 
-            const publisher =
-                document.getElementById("bookPublisher").value.trim();
 
-            const year =
-                document.getElementById("bookYear").value;
+                if (error) {
 
-            const genre =
-                document.getElementById("bookGenre").value.trim();
+                    console.error(
+                        "ERRO DO SUPABASE:",
+                        error
+                    );
 
-            const location =
-                document.getElementById("bookLocation").value.trim();
 
-            const cover =
-                document.getElementById("bookCover").value.trim();
+                    throw new Error(
+                        `${error.message} | Código: ${error.code || "sem código"}`
+                    );
 
-            const description =
-                document.getElementById("bookDescription").value.trim();
+                }
 
-            const copies =
-                Number(document.getElementById("bookCopies").value);
 
-            // Validar dados principais
-            if (!title || !author) {
-                throw new Error(
-                    "Título e autor são obrigatórios."
+                console.log(
+                    "Livro cadastrado com sucesso:",
+                    data
                 );
+
+
+                /* ----------------------------------
+                   SUCESSO
+                ---------------------------------- */
+
+                catalogMessage.textContent =
+                    "Livro cadastrado com sucesso!";
+
+                catalogMessage.style.color =
+                    "#315c4c";
+
+
+                catalogForm.reset();
+
+
+                document.getElementById(
+                    "bookCopies"
+                ).value = 1;
+
+
+                /* Atualizar catálogo */
+
+                await loadBooks();
+
+
+                /* Fechar modal */
+
+                setTimeout(() => {
+
+                    closeCatalogModalFunction();
+
+                    catalogMessage.textContent =
+                        "";
+
+                }, 1200);
+
             }
 
-            if (!copies || copies < 1) {
-                throw new Error(
-                    "A quantidade de exemplares deve ser pelo menos 1."
-                );
-            }
 
-            // Montar objeto
-            const bookData = {
+            /* ----------------------------------
+               ERRO
+            ---------------------------------- */
 
-                title: title,
-
-                author: author,
-
-                isbn: isbn || null,
-
-                publisher: publisher || null,
-
-                publication_year:
-                    year ? Number(year) : null,
-
-                genre:
-                    genre || null,
-
-                description:
-                    description || null,
-
-                cover_url:
-                    cover || null,
-
-                shelf_location:
-                    location || null,
-
-                total_copies:
-                    copies,
-
-                available_copies:
-                    copies,
-
-                status:
-                    "available"
-            };
-
-            console.log(
-                "Tentando cadastrar:",
-                bookData
-            );
-
-            // Inserir no Supabase
-            const { data, error } = await db
-                .from("books")
-                .insert(bookData)
-                .select()
-                .single();
-
-            if (error) {
+            catch (error) {
 
                 console.error(
-                    "ERRO DO SUPABASE:",
+                    "ERRO COMPLETO AO CADASTRAR:",
                     error
                 );
 
-                throw new Error(
-                    `${error.message} | Código: ${error.code || "sem código"}`
-                );
+
+                catalogMessage.textContent =
+                    error.message ||
+                    "Não foi possível cadastrar o livro.";
+
+
+                catalogMessage.style.color =
+                    "#a33";
+
             }
 
-            console.log(
-                "Livro cadastrado com sucesso:",
-                data
-            );
-
-            catalogMessage.textContent =
-                "Livro cadastrado com sucesso!";
-
-            catalogMessage.style.color =
-                "#315c4c";
-
-            catalogForm.reset();
-
-            document.getElementById(
-                "bookCopies"
-            ).value = 1;
-
-            // Atualizar catálogo
-            await loadBooks();
-
-            // Fechar modal
-            setTimeout(() => {
-
-                closeCatalogModalFunction();
-
-                catalogMessage.textContent = "";
-
-            }, 1200);
-
-        } catch (error) {
-
-            console.error(
-                "ERRO COMPLETO AO CADASTRAR:",
-                error
-            );
-
-            catalogMessage.textContent =
-                error.message ||
-                "Não foi possível cadastrar o livro.";
-
-            catalogMessage.style.color =
-                "#a33";
         }
-
-    });
+    );
 
 }
 
 
-/* ==============================
-   ESC FECHA O MODAL / PAINEL
-============================== */
+/* ==================================================
+   ESC FECHA MODAIS
+================================================== */
 
 document.addEventListener(
     "keydown",
     (event) => {
 
         if (
-            event.key === "Escape"
+            event.key !== "Escape"
+        ) {
+            return;
+        }
+
+
+        if (
+            catalogModal.classList.contains(
+                "active"
+            )
         ) {
 
-            if (
-                catalogModal.classList.contains(
-                    "active"
-                )
-            ) {
+            closeCatalogModalFunction();
 
-                closeCatalogModalFunction();
-
-                return;
-            }
+            return;
+        }
 
 
-            if (
-                sidePanel.classList.contains(
-                    "active"
-                )
-            ) {
+        if (
+            sidePanel.classList.contains(
+                "active"
+            )
+        ) {
 
-                closeSidePanelFunction();
-
-            }
+            closeSidePanelFunction();
 
         }
 
@@ -885,9 +1052,9 @@ document.addEventListener(
 );
 
 
-/* ==============================
+/* ==================================================
    LOGOUT
-============================== */
+================================================== */
 
 logoutButton.addEventListener(
     "click",
@@ -939,8 +1106,8 @@ logoutButton.addEventListener(
 );
 
 
-/* ==============================
-   VERIFICAR SESSÃO AO CARREGAR
-============================== */
+/* ==================================================
+   VERIFICAR SESSÃO
+================================================== */
 
 checkUser();
