@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen">
+    <meta
+        name="description"
+        content="Stipp BookHouse — Biblioteca da E.E. Maria de Lourdes Stipp Steffen"
+    >
 
     <title>Stipp BookHouse</title>
 
@@ -13,326 +16,196 @@
 
 <body>
 
-    <div id="app">
-        <header class="site-header">
-            <div class="brand">
-                <div class="brand-mark">S</div>
+<div id="app">
 
-                <div class="brand-text">
-                    <h1>Stipp BookHouse</h1>
-                    <span>Biblioteca Escolar</span>
-                </div>
+    <!-- ==============================
+         CABEÇALHO
+    =============================== -->
+
+    <header class="site-header">
+
+        <div class="brand">
+
+            <div class="brand-mark">S</div>
+
+            <div class="brand-text">
+                <h1>Stipp BookHouse</h1>
+                <span>Biblioteca Escolar</span>
             </div>
 
-<nav class="main-nav">
-    <a href="#inicio">Início</a>
-    <a href="#catalogo">Catálogo</a>
-    <a href="#sobre">Sobre</a>
-    <button id="loginButton" class="nav-login-button">Entrar</button>
-</nav>
-        </header>
-
-        <main>
-            <section id="inicio" class="hero">
-                <div class="hero-content">
-                    <span class="eyebrow">E.E. Maria de Lourdes Stipp Steffen</span>
-
-                    <h2>
-                        Um lugar para encontrar
-                        <span>novas histórias.</span>
-                    </h2>
-
-                    <p>
-                        Explore o acervo da nossa biblioteca, descubra novos livros
-                        e encontre sua próxima leitura.
-                    </p>
-
-                    <a href="#catalogo" class="primary-button">
-                        Explorar catálogo
-                    </a>
-                </div>
-            </section>
-
-            <section id="catalogo" class="catalog-section">
-                <div class="section-heading">
-                    <span class="eyebrow">Acervo</span>
-                    <h2>Catálogo da biblioteca</h2>
-                    <p>
-                        Encontre livros por título, autor, gênero ou categoria.
-                    </p>
-                </div>
-
-                <div class="catalog-search">
-                    <input
-                        type="search"
-                        id="searchInput"
-                        placeholder="Pesquisar livro, autor ou gênero..."
-                        autocomplete="off"
-                    >
-                </div>
-
-                <div id="bookGrid" class="book-grid">
-                    <!-- Os livros serão carregados pelo JavaScript -->
-                </div>
-            </section>
-
-            
-            <section id="sobre" class="about-section">
-                <div class="section-heading">
-                    <span class="eyebrow">Sobre</span>
-                    <h2>Stipp BookHouse</h2>
-                    <p>
-                        Uma biblioteca escolar mais organizada, acessível
-                        e fácil de explorar.
-                    </p>
-                </div>
-            </section>
-        </main>
-
-
-        <!-- PAINEL LATERAL -->
-<div id="sidePanelOverlay" class="side-panel-overlay"></div>
-
-<aside id="sidePanel" class="side-panel">
-
-    <div class="side-panel-header">
-        <div>
-            <span class="eyebrow">Stipp BookHouse</span>
-            <h2 id="sidePanelTitle">Entrar</h2>
         </div>
 
-        <button
-            id="closeSidePanel"
-            class="close-side-panel"
-            aria-label="Fechar painel"
-        >
-            ×
-        </button>
-    </div>
+        <nav class="main-nav">
 
-    <!-- LOGIN -->
+            <a href="#inicio">Início</a>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#sobre">Sobre</a>
 
-    <div id="loginPanel">
-
-        <p class="side-panel-description">
-            Entre na sua conta para acessar os recursos exclusivos da biblioteca.
-        </p>
-
-        <form id="loginForm" class="login-form">
-
-            <label for="loginEmail">
-                E-mail
-            </label>
-
-            <input
-                type="email"
-                id="loginEmail"
-                placeholder="seu@email.com"
-                required
+            <button
+                id="loginButton"
+                class="nav-login-button"
+                type="button"
             >
-
-            <label for="loginPassword">
-                Senha
-            </label>
-
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="Sua senha"
-                required
-            >
-
-            <button type="submit" class="primary-button">
                 Entrar
             </button>
 
-            <p id="loginMessage"></p>
+        </nav>
 
-        </form>
-
-    </div>
-
-    <!-- PAINEL DO ADMIN -->
-
-    <div id="adminPanel" class="admin-panel">
-
-        <div class="admin-welcome">
-            <span class="eyebrow">Área administrativa</span>
-
-            <h3>Bem-vindo!</h3>
-
-            <p id="adminUserName">
-                Administrador
-            </p>
-        </div>
-
-        <div class="admin-menu">
-
-            <button
-                id="showCatalogForm"
-                class="admin-menu-button"
-            >
-                <span>📚</span>
-                <div>
-                    <strong>Catalogar livros</strong>
-                    <small>Adicionar livros ao acervo</small>
-                </div>
-            </button>
+    </header>
 
 
-    <form id="catalogForm" class="catalog-form">
+    <!-- ==============================
+         CONTEÚDO PRINCIPAL
+    =============================== -->
 
-        <div class="form-field full-width">
-            <label for="bookTitle">Título *</label>
-            <input
-                type="text"
-                id="bookTitle"
-                placeholder="Título do livro"
-                required
-            >
-        </div>
+    <main>
 
-        <div class="form-field full-width">
-            <label for="bookAuthor">Autor *</label>
-            <input
-                type="text"
-                id="bookAuthor"
-                placeholder="Nome do autor"
-                required
-            >
-        </div>
+        <!-- INÍCIO -->
 
-        <div class="form-field">
-            <label for="bookISBN">ISBN</label>
-            <input
-                type="text"
-                id="bookISBN"
-                placeholder="Ex.: 978-..."
-            >
-        </div>
+        <section id="inicio" class="hero">
 
-        <div class="form-field">
-            <label for="bookPublisher">Editora</label>
-            <input
-                type="text"
-                id="bookPublisher"
-                placeholder="Nome da editora"
-            >
-        </div>
+            <div class="hero-content">
 
-        <div class="form-field">
-            <label for="bookYear">Ano de publicação</label>
-            <input
-                type="number"
-                id="bookYear"
-                placeholder="Ex.: 2024"
-                min="0"
-                max="2100"
-            >
-        </div>
+                <span class="eyebrow">
+                    E.E. Maria de Lourdes Stipp Steffen
+                </span>
 
-        <div class="form-field">
-            <label for="bookGenre">Gênero</label>
-            <input
-                type="text"
-                id="bookGenre"
-                placeholder="Ex.: Romance"
-            >
-        </div>
+                <h2>
+                    Um lugar para encontrar
+                    <span>novas histórias.</span>
+                </h2>
 
-        <div class="form-field full-width">
-            <label for="bookCategory">Categoria</label>
-            <input
-                type="text"
-                id="bookCategory"
-                placeholder="Categoria do livro"
-            >
-        </div>
+                <p>
+                    Explore o acervo da nossa biblioteca, descubra novos livros
+                    e encontre sua próxima leitura.
+                </p>
 
-        <div class="form-field full-width">
-            <label for="bookLocation">Localização na estante</label>
-            <input
-                type="text"
-                id="bookLocation"
-                placeholder="Ex.: Estante A — Prateleira 2"
-            >
-        </div>
+                <a
+                    href="#catalogo"
+                    class="primary-button"
+                >
+                    Explorar catálogo
+                </a>
 
-        <div class="form-field full-width">
-            <label for="bookCover">URL da capa</label>
-            <input
-                type="url"
-                id="bookCover"
-                placeholder="https://..."
-            >
-        </div>
-
-        <div class="form-field full-width">
-            <label for="bookDescription">Descrição</label>
-            <textarea
-                id="bookDescription"
-                placeholder="Descrição do livro..."
-                rows="5"
-            ></textarea>
-        </div>
-
-        <div class="form-field full-width">
-            <label for="bookCopies">Quantidade de exemplares *</label>
-            <input
-                type="number"
-                id="bookCopies"
-                value="1"
-                min="1"
-                required
-            >
-        </div>
-
-        <button
-            type="submit"
-            class="primary-button catalog-submit-button"
-        >
-            Cadastrar livro
-        </button>
-
-        <p id="catalogMessage"></p>
-
-    </form>
-
-</div>
-            
-        </div>
-
-        <button
-            id="logoutButton"
-            class="secondary-button logout-button"
-        >
-            Sair da conta
-        </button>
-
-    </div>
-
-</aside>
-
-<!-- MODAL DE CATALOGAÇÃO -->
-
-<div id="catalogModal" class="catalog-modal">
-
-    <div class="catalog-modal-overlay"></div>
-
-    <div class="catalog-modal-card">
-
-        <div class="catalog-modal-header">
-
-            <div>
-                <span class="eyebrow">Novo livro</span>
-                <h2>Cadastrar livro</h2>
             </div>
 
+        </section>
+
+
+        <!-- CATÁLOGO -->
+
+        <section
+            id="catalogo"
+            class="catalog-section"
+        >
+
+            <div class="section-heading">
+
+                <span class="eyebrow">
+                    Acervo
+                </span>
+
+                <h2>
+                    Catálogo da biblioteca
+                </h2>
+
+                <p>
+                    Encontre livros por título, autor, gênero ou categoria.
+                </p>
+
+            </div>
+
+
+            <div class="catalog-search">
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Pesquisar livro, autor ou gênero..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div
+                id="bookGrid"
+                class="book-grid"
+            >
+                <!-- Livros carregados pelo JavaScript -->
+            </div>
+
+        </section>
+
+
+        <!-- SOBRE -->
+
+        <section
+            id="sobre"
+            class="about-section"
+        >
+
+            <div class="section-heading">
+
+                <span class="eyebrow">
+                    Sobre
+                </span>
+
+                <h2>
+                    Stipp BookHouse
+                </h2>
+
+                <p>
+                    Uma biblioteca escolar mais organizada, acessível
+                    e fácil de explorar.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==============================
+         OVERLAY DO PAINEL
+    =============================== -->
+
+    <div
+        id="sidePanelOverlay"
+        class="side-panel-overlay"
+    ></div>
+
+
+    <!-- ==============================
+         PAINEL LATERAL
+    =============================== -->
+
+    <aside
+        id="sidePanel"
+        class="side-panel"
+    >
+
+        <div class="side-panel-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    Stipp BookHouse
+                </span>
+
+                <h2 id="sidePanelTitle">
+                    Entrar
+                </h2>
+
+            </div>
+
+
             <button
+                id="closeSidePanel"
+                class="close-side-panel"
                 type="button"
-                id="closeCatalogModal"
-                class="close-catalog-modal"
-                aria-label="Fechar"
+                aria-label="Fechar painel"
             >
                 ×
             </button>
@@ -340,191 +213,405 @@
         </div>
 
 
-        <form id="catalogForm" class="catalog-form">
+        <!-- ==============================
+             LOGIN
+        =============================== -->
 
-            <div class="form-field">
-                <label for="bookTitle">
-                    Título *
+        <div id="loginPanel">
+
+            <p class="side-panel-description">
+                Entre na sua conta para acessar os recursos exclusivos
+                da biblioteca.
+            </p>
+
+
+            <form
+                id="loginForm"
+                class="login-form"
+            >
+
+                <label for="loginEmail">
+                    E-mail
                 </label>
 
                 <input
-                    type="text"
-                    id="bookTitle"
-                    placeholder="Título do livro"
+                    type="email"
+                    id="loginEmail"
+                    placeholder="seu@email.com"
                     required
                 >
-            </div>
 
 
-            <div class="form-field">
-                <label for="bookAuthor">
-                    Autor *
+                <label for="loginPassword">
+                    Senha
                 </label>
 
                 <input
-                    type="text"
-                    id="bookAuthor"
-                    placeholder="Nome do autor"
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Sua senha"
                     required
                 >
-            </div>
 
-
-            <div class="form-field">
-                <label for="bookISBN">
-                    ISBN
-                </label>
-
-                <input
-                    type="text"
-                    id="bookISBN"
-                    placeholder="Ex.: 978-..."
-                >
-            </div>
-
-
-            <div class="form-field">
-                <label for="bookPublisher">
-                    Editora
-                </label>
-
-                <input
-                    type="text"
-                    id="bookPublisher"
-                    placeholder="Nome da editora"
-                >
-            </div>
-
-
-            <div class="form-field">
-                <label for="bookYear">
-                    Ano de publicação
-                </label>
-
-                <input
-                    type="number"
-                    id="bookYear"
-                    placeholder="Ex.: 2024"
-                    min="0"
-                    max="2100"
-                >
-            </div>
-
-
-            <div class="form-field">
-                <label for="bookGenre">
-                    Gênero
-                </label>
-
-                <input
-                    type="text"
-                    id="bookGenre"
-                    placeholder="Ex.: Romance"
-                >
-            </div>
-
-
-            <div class="form-field full-width">
-                <label for="bookCategory">
-                    Categoria
-                </label>
-
-                <input
-                    type="text"
-                    id="bookCategory"
-                    placeholder="Categoria do livro"
-                >
-            </div>
-
-
-            <div class="form-field full-width">
-                <label for="bookLocation">
-                    Localização na estante
-                </label>
-
-                <input
-                    type="text"
-                    id="bookLocation"
-                    placeholder="Ex.: Estante A — Prateleira 2"
-                >
-            </div>
-
-
-            <div class="form-field full-width">
-                <label for="bookCover">
-                    URL da capa
-                </label>
-
-                <input
-                    type="url"
-                    id="bookCover"
-                    placeholder="https://..."
-                >
-            </div>
-
-
-            <div class="form-field full-width">
-                <label for="bookDescription">
-                    Descrição
-                </label>
-
-                <textarea
-                    id="bookDescription"
-                    placeholder="Descrição do livro..."
-                    rows="4"
-                ></textarea>
-            </div>
-
-
-            <div class="form-field">
-                <label for="bookCopies">
-                    Exemplares *
-                </label>
-
-                <input
-                    type="number"
-                    id="bookCopies"
-                    value="1"
-                    min="1"
-                    required
-                >
-            </div>
-
-
-            <div class="catalog-form-actions">
-
-                <button
-                    type="button"
-                    id="cancelCatalogModal"
-                    class="secondary-button"
-                >
-                    Cancelar
-                </button>
 
                 <button
                     type="submit"
                     class="primary-button"
                 >
-                    Cadastrar livro
+                    Entrar
+                </button>
+
+
+                <p id="loginMessage"></p>
+
+            </form>
+
+        </div>
+
+
+        <!-- ==============================
+             PAINEL ADMINISTRATIVO
+        =============================== -->
+
+        <div
+            id="adminPanel"
+            class="admin-panel"
+        >
+
+            <div class="admin-welcome">
+
+                <span class="eyebrow">
+                    Área administrativa
+                </span>
+
+                <h3>
+                    Bem-vindo!
+                </h3>
+
+                <p id="adminUserName">
+                    Administrador
+                </p>
+
+            </div>
+
+
+            <div class="admin-menu">
+
+                <button
+                    id="showCatalogForm"
+                    class="admin-menu-button"
+                    type="button"
+                >
+
+                    <span>📚</span>
+
+                    <div>
+
+                        <strong>
+                            Catalogar livros
+                        </strong>
+
+                        <small>
+                            Adicionar livros ao acervo
+                        </small>
+
+                    </div>
+
                 </button>
 
             </div>
 
-            <p id="catalogMessage"></p>
 
-        </form>
+            <button
+                id="logoutButton"
+                class="secondary-button logout-button"
+                type="button"
+            >
+                Sair da conta
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ==============================
+         MODAL DE CATALOGAÇÃO
+    =============================== -->
+
+    <div
+        id="catalogModal"
+        class="catalog-modal"
+    >
+
+        <div
+            class="catalog-modal-overlay"
+        ></div>
+
+
+        <div class="catalog-modal-card">
+
+            <div class="catalog-modal-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Novo livro
+                    </span>
+
+                    <h2>
+                        Cadastrar livro
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="closeCatalogModal"
+                    class="close-catalog-modal"
+                    aria-label="Fechar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- FORMULÁRIO ÚNICO DE CATALOGAÇÃO -->
+
+            <form
+                id="catalogForm"
+                class="catalog-form"
+            >
+
+                <div class="form-field">
+
+                    <label for="bookTitle">
+                        Título *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookTitle"
+                        placeholder="Título do livro"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="bookAuthor">
+                        Autor *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookAuthor"
+                        placeholder="Nome do autor"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="bookISBN">
+                        ISBN
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookISBN"
+                        placeholder="Ex.: 978-..."
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="bookPublisher">
+                        Editora
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookPublisher"
+                        placeholder="Nome da editora"
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="bookYear">
+                        Ano de publicação
+                    </label>
+
+                    <input
+                        type="number"
+                        id="bookYear"
+                        placeholder="Ex.: 2024"
+                        min="0"
+                        max="2100"
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="bookGenre">
+                        Gênero
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookGenre"
+                        placeholder="Ex.: Romance"
+                    >
+
+                </div>
+
+
+                <div class="form-field full-width">
+
+                    <label for="bookCategory">
+                        Categoria
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookCategory"
+                        placeholder="Categoria do livro"
+                    >
+
+                </div>
+
+
+                <div class="form-field full-width">
+
+                    <label for="bookLocation">
+                        Localização na estante
+                    </label>
+
+                    <input
+                        type="text"
+                        id="bookLocation"
+                        placeholder="Ex.: Estante A — Prateleira 2"
+                    >
+
+                </div>
+
+
+                <div class="form-field full-width">
+
+                    <label for="bookCover">
+                        URL da capa
+                    </label>
+
+                    <input
+                        type="url"
+                        id="bookCover"
+                        placeholder="https://..."
+                    >
+
+                </div>
+
+
+                <div class="form-field full-width">
+
+                    <label for="bookDescription">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="bookDescription"
+                        placeholder="Descrição do livro..."
+                        rows="4"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="bookCopies">
+                        Exemplares *
+                    </label>
+
+                    <input
+                        type="number"
+                        id="bookCopies"
+                        value="1"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="catalog-form-actions">
+
+                    <button
+                        type="button"
+                        id="cancelCatalogModal"
+                        class="secondary-button"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Cadastrar livro
+                    </button>
+
+                </div>
+
+
+                <p id="catalogMessage"></p>
+
+            </form>
+
+        </div>
 
     </div>
+
+
+    <!-- ==============================
+         RODAPÉ
+    =============================== -->
+
+    <footer class="site-footer">
+
+        <p>
+            Stipp BookHouse © 2026
+        </p>
+
+        <p>
+            E.E. Maria de Lourdes Stipp Steffen
+        </p>
+
+    </footer>
 
 </div>
-        
-        <footer class="site-footer">
-            <p>Stipp BookHouse © 2026</p>
-            <p>E.E. Maria de Lourdes Stipp Steffen</p>
-        </footer>
-    </div>
+
+
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- JAVASCRIPT DO SITE -->
+
 <script src="script.js"></script>
+
 </body>
 </html>
