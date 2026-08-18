@@ -191,11 +191,17 @@ async function fetchBookByISBN(isbn) {
         }
 
 
-        const data =
-            await response.json();
+      const data =
+    await response.json();
 
-console.log("Total de itens:", data.totalItems);
-console.log(JSON.stringify(data, null, 2)); // ADICIONE ESSA LINHA TEMPORARIAMENTE
+// TEMPORÁRIO — mostra o JSON na tela pra você copiar
+const debugBox = document.createElement("textarea");
+debugBox.value = JSON.stringify(data, null, 2);
+debugBox.style.cssText =
+    "position:fixed;inset:10px;z-index:99999;width:calc(100% - 20px);height:calc(100% - 20px);";
+document.body.appendChild(debugBox);
+debugBox.focus();
+debugBox.select();
 
         if (
             !data.items ||
