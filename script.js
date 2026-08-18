@@ -161,6 +161,43 @@ function isValidISBN13(isbn) {
 
 
 /* =========================================================
+   CONVERTER ISBN-10 PARA ISBN-13
+
+   Muitos livros mais antigos só possuem ISBN-10. Essa
+   função converte para o formato ISBN-13 (prefixo 978)
+   recalculando o dígito verificador, para que o mesmo
+   fluxo de busca automática funcione também nesses casos.
+========================================================= */
+
+function convertISBN10to13(isbn10) {
+
+    // Deve ter 9 dígitos + 1 dígito verificador (0-9 ou X)
+    if (!/^\d{9}[\dXx]$/.test(isbn10)) {
+        return null;
+    }
+
+    const core =
+        "978" + isbn10.substring(0, 9);
+
+    let sum = 0;
+
+    for (let i = 0; i < 12; i++) {
+
+        sum +=
+            (i % 2 === 0 ? 1 : 3) *
+            Number(core[i]);
+
+    }
+
+    const checkDigit =
+        (10 - (sum % 10)) % 10;
+
+    return core + checkDigit;
+
+}
+
+
+/* =========================================================
    TRADUZIR TEXTO (MyMemory — gratuito, sem chave)
 ========================================================= */
 
@@ -273,6 +310,11 @@ async function fetchFromOpenLibrary(isbn) {
    mas o formulário de catalogação passa a mensagem do
    próprio formulário (catalogMessage) quando o ISBN é
    digitado manualmente.
+
+   Retorna `true` se algum dado foi encontrado (Google
+   Books ou Open Library) e `false` em caso de falha total,
+   para que quem chamou a função saiba se deve permitir uma
+   nova tentativa com o mesmo ISBN.
 ========================================================= */
 
 async function fetchBookByISBN(isbn, messageElement = isbnScannerMessage) {
@@ -390,14 +432,20 @@ async function fetchBookByISBN(isbn, messageElement = isbnScannerMessage) {
                         "Dados encontrados no Open Library! Confira as informações antes de cadastrar.";
                 }
 
-            } else if (message) {
+
+                return true;
+
+            }
+
+
+            if (message) {
 
                 message.textContent =
                     "Não foi possível localizar o livro automaticamente. Preencha manualmente.";
 
             }
 
-            return;
+            return false;
 
         }
 
@@ -575,6 +623,9 @@ async function fetchBookByISBN(isbn, messageElement = isbnScannerMessage) {
         }
 
 
+        return true;
+
+
     } catch (error) {
 
         console.error(
@@ -589,6 +640,9 @@ async function fetchBookByISBN(isbn, messageElement = isbnScannerMessage) {
                 "Não foi possível buscar os dados automaticamente. Preencha manualmente.";
 
         }
+
+
+        return false;
 
     }
 
@@ -803,6 +857,13 @@ isbnInput.value =
     isbn;
 
 
+// Sincroniza o controle do formulário para não disparar
+// uma segunda busca (redundante) quando o evento "input"
+// do campo for acionado ao definirmos o valor acima
+lastTypedISBN =
+    isbn;
+
+
 /* Buscar automaticamente os dados do livro */
 
 await fetchBookByISBN(
@@ -1011,8 +1072,18 @@ const bookCategory =
 
    Além do leitor de câmera, o campo de ISBN do formulário
    de catalogação também busca os dados automaticamente
-   quando a pessoa digita (ou cola) um ISBN-13 completo e
+   quando a pessoa digita (ou cola) um ISBN completo e
    válido — útil para quem não consegue usar a câmera.
+
+   Aceita tanto ISBN-13 (13 dígitos, prefixo 978/979) quanto
+   ISBN-10 (9 dígitos + dígito verificador, que pode ser
+   "X"), convertendo automaticamente o ISBN-10 para o
+   formato 13 antes de buscar.
+
+   Além da busca automática ao digitar, a tecla Enter dentro
+   deste campo também força uma nova tentativa de busca —
+   sem isso, o Enter apenas submeteria o formulário inteiro
+   (tentando salvar o livro antes da hora).
 ========================================================= */
 
 const bookISBNInput =
@@ -1020,47 +1091,238 @@ const bookISBNInput =
 
 let lastTypedISBN = "";
 
+
+/* =========================================================
+   NORMALIZAR E VALIDAR O QUE ESTÁ NO CAMPO DE ISBN
+
+   Devolve o ISBN-13 já validado (convertendo de ISBN-10
+   quando necessário) ou null quando o valor não corresponde
+   a um ISBN válido.
+========================================================= */
+
+function resolveISBNFromInput(rawValue) {
+
+    // Mantém dígitos e o "X" (usado no dígito verificador
+    // de ISBN-10), removendo qualquer outro caractere
+    const cleaned =
+        rawValue.replace(/[^\dXx]/g, "").toUpperCase();
+
+
+    // Tenta como ISBN-13 diretamente
+    if (cleaned.length === 13) {
+
+        const digitsOnly =
+            cleaned.replace(/\D/g, "");
+
+
+        if (
+            digitsOnly.length === 13 &&
+            isValidISBN13(digitsOnly)
+        ) {
+
+            return digitsOnly;
+
+        }
+
+
+        return null;
+
+    }
+
+
+    // Tenta como ISBN-10, convertendo para ISBN-13
+    if (cleaned.length === 10) {
+
+        const converted =
+            convertISBN10to13(cleaned);
+
+
+        if (
+            converted &&
+            isValidISBN13(converted)
+        ) {
+
+            return converted;
+
+        }
+
+
+        return null;
+
+    }
+
+
+    // Comprimento incompleto — ainda digitando
+    return null;
+
+}
+
+
+/* =========================================================
+   DISPARAR BUSCA (compartilhado entre "input" e Enter)
+========================================================= */
+
+async function triggerISBNLookup(isbn, { force = false } = {}) {
+
+    if (!force && isbn === lastTypedISBN) {
+        return;
+    }
+
+
+    lastTypedISBN =
+        isbn;
+
+
+    // Reflete no campo o ISBN-13 já normalizado, para o
+    // caso de o usuário ter digitado um ISBN-10
+    if (bookISBNInput.value.replace(/\D/g, "") !== isbn) {
+
+        bookISBNInput.value =
+            isbn;
+
+    }
+
+
+    setMessage(
+        catalogMessage,
+        "ISBN reconhecido! Buscando informações do livro..."
+    );
+
+
+    const found =
+        await fetchBookByISBN(
+            isbn,
+            catalogMessage
+        );
+
+
+    // Se a busca falhou completamente (rede fora do ar,
+    // API indisponível etc.), libera uma nova tentativa
+    // com o mesmo ISBN em vez de deixar o campo "travado"
+    if (!found && isbn === lastTypedISBN) {
+
+        lastTypedISBN =
+            "";
+
+    }
+
+}
+
+
 if (bookISBNInput) {
+
+    /* =====================================================
+       BUSCA AUTOMÁTICA AO DIGITAR/COLAR
+    ===================================================== */
 
     bookISBNInput.addEventListener(
         "input",
         async () => {
 
+            const rawValue =
+                bookISBNInput.value;
+
+            const digitsOnly =
+                rawValue.replace(/\D/g, "");
+
+
+            // Ainda incompleto: não mostra erro, só aguarda
+            if (
+                digitsOnly.length < 10 ||
+                (
+                    digitsOnly.length > 10 &&
+                    digitsOnly.length < 13
+                )
+            ) {
+
+                if (
+                    catalogMessage.textContent.includes(
+                        "inválido"
+                    )
+                ) {
+
+                    setMessage(
+                        catalogMessage
+                    );
+
+                }
+
+                return;
+
+            }
+
+
             const isbn =
-                bookISBNInput.value.replace(/\D/g, "");
+                resolveISBNFromInput(
+                    rawValue
+                );
 
 
-            // Só dispara quando o ISBN estiver completo
-            if (isbn.length !== 13) {
+            if (!isbn) {
+
+                setMessage(
+                    catalogMessage,
+                    "ISBN incompleto ou inválido. Confira a digitação.",
+                    "error"
+                );
+
                 return;
+
             }
 
 
-            // Só dispara se o dígito verificador bater
-            if (!isValidISBN13(isbn)) {
-                return;
-            }
-
-
-            // Evita buscar de novo o mesmo ISBN repetidamente
-            if (isbn === lastTypedISBN) {
-                return;
-            }
-
-
-            lastTypedISBN =
-                isbn;
-
-
-            setMessage(
-                catalogMessage,
-                "ISBN reconhecido! Buscando informações do livro..."
+            await triggerISBNLookup(
+                isbn
             );
 
+        }
+    );
 
-            await fetchBookByISBN(
+
+    /* =====================================================
+       ENTER FORÇA UMA NOVA BUSCA
+
+       Sem isso, o Enter dentro deste campo aciona o submit
+       do formulário inteiro (catalogForm), tentando salvar
+       o livro antes da hora.
+    ===================================================== */
+
+    bookISBNInput.addEventListener(
+        "keydown",
+        async event => {
+
+            if (event.key !== "Enter") {
+                return;
+            }
+
+
+            event.preventDefault();
+
+
+            const isbn =
+                resolveISBNFromInput(
+                    bookISBNInput.value
+                );
+
+
+            if (!isbn) {
+
+                setMessage(
+                    catalogMessage,
+                    "ISBN inválido. Verifique os números digitados.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // force: true — permite buscar de novo mesmo
+            // que seja o mesmo ISBN da última tentativa
+            await triggerISBNLookup(
                 isbn,
-                catalogMessage
+                { force: true }
             );
 
         }
