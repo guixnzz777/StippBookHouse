@@ -699,83 +699,28 @@ async function openISBNScanner() {
 
     try {
 
-        await isbnScannerInstance.start(
+    await isbnScannerInstance.start(
+    { facingMode: "environment" },
+    {
+        fps: 10,
 
-            // "exact" removido: em alguns aparelhos que não
-            // reportam facingMode corretamente, ele impede
-            // a câmera de abrir. "environment" simples já
-            // prioriza a câmera traseira sem travar nesses casos.
-            {
-                facingMode: "environment"
-            },
+        // qrbox removido de propósito: sem essa opção, o
+        // html5-qrcode escaneia o frame inteiro da câmera,
+        // em vez de recortar só a área da caixa guia. Assim
+        // o código de barras é detectado em qualquer posição
+        // da imagem, sem precisar de alinhamento manual.
 
-            {
-
-                // FPS reduzido de 15 para 10: quando a API
-                // nativa do navegador está disponível
-                // (useBarCodeDetectorIfSupported), não
-                // precisamos de tantos quadros por segundo —
-                // isso só sobrecarrega celulares mais fracos.
-                fps: 10,
-
-                // Caixa de leitura DINÂMICA em vez de fixa
-                // (320x140). Passa a ocupar a maior parte do
-                // visor (85% da largura, 35% da altura), o
-                // que permite ler o código com o celular mais
-                // afastado — essencial para aparelhos sem
-                // lente macro, que não conseguem focar de perto.
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-
-                    return {
-                        width: Math.floor(
-                            viewfinderWidth * 0.85
-                        ),
-                        height: Math.floor(
-                            viewfinderHeight * 0.35
-                        )
-                    };
-
-                },
-
-                // Somente EAN-13
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.EAN_13
-                ],
-
-                // Ativa a API nativa de leitura de código de
-                // barras do navegador (BarcodeDetector), quando
-                // disponível (principalmente Chrome/Android).
-                // É acelerada por hardware e muito mais rápida
-                // e precisa que o decodificador em JS puro.
-                // Em navegadores sem suporte (ex.: Safari/iOS
-                // mais antigos), a biblioteca cai automaticamente
-                // para o decodificador padrão, sem quebrar nada.
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                },
-
-                // Pede resolução mais alta (ajuda a enxergar o
-                // código de mais longe) e tenta ativar foco
-                // contínuo, quando o hardware permite. Usamos
-                // "advanced" porque restrições aqui são
-                // ignoradas silenciosamente pelos aparelhos que
-                // não suportam, em vez de travar a câmera.
-                videoConstraints: {
-                    facingMode: "environment",
-                    width: {
-                        ideal: 1920
-                    },
-                    height: {
-                        ideal: 1080
-                    },
-                    advanced: [
-                        {
-                            focusMode: "continuous"
-                        }
-                    ]
-                }
-
-            },
+        formatsToSupport: [Html5QrcodeSupportedFormats.EAN_13],
+        experimentalFeatures: {
+            useBarCodeDetectorIfSupported: true
+        },
+        videoConstraints: {
+            facingMode: "environment",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            advanced: [{ focusMode: "continuous" }]
+        }
+    },
 
 async (decodedText) => {
                 /*
