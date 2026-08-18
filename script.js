@@ -674,6 +674,8 @@ function fillFormFromOpenLibrary(
 
 /* =========================================================
    ABRIR LEITOR
+   (versão otimizada — leitura mais rápida e a maior
+   distância, para celulares sem câmera macro)
 ========================================================= */
 
 async function openISBNScanner() {
@@ -699,27 +701,79 @@ async function openISBNScanner() {
 
         await isbnScannerInstance.start(
 
+            // "exact" removido: em alguns aparelhos que não
+            // reportam facingMode corretamente, ele impede
+            // a câmera de abrir. "environment" simples já
+            // prioriza a câmera traseira sem travar nesses casos.
             {
-                facingMode: {
-                    exact: "environment"
-                }
+                facingMode: "environment"
             },
 
             {
 
-                // Mais quadros analisados por segundo
-                fps: 15,
+                // FPS reduzido de 15 para 10: quando a API
+                // nativa do navegador está disponível
+                // (useBarCodeDetectorIfSupported), não
+                // precisamos de tantos quadros por segundo —
+                // isso só sobrecarrega celulares mais fracos.
+                fps: 10,
 
-                // Área de leitura
-                qrbox: {
-                    width: 320,
-                    height: 140
+                // Caixa de leitura DINÂMICA em vez de fixa
+                // (320x140). Passa a ocupar a maior parte do
+                // visor (85% da largura, 35% da altura), o
+                // que permite ler o código com o celular mais
+                // afastado — essencial para aparelhos sem
+                // lente macro, que não conseguem focar de perto.
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+
+                    return {
+                        width: Math.floor(
+                            viewfinderWidth * 0.85
+                        ),
+                        height: Math.floor(
+                            viewfinderHeight * 0.35
+                        )
+                    };
+
                 },
 
                 // Somente EAN-13
                 formatsToSupport: [
                     Html5QrcodeSupportedFormats.EAN_13
-                ]
+                ],
+
+                // Ativa a API nativa de leitura de código de
+                // barras do navegador (BarcodeDetector), quando
+                // disponível (principalmente Chrome/Android).
+                // É acelerada por hardware e muito mais rápida
+                // e precisa que o decodificador em JS puro.
+                // Em navegadores sem suporte (ex.: Safari/iOS
+                // mais antigos), a biblioteca cai automaticamente
+                // para o decodificador padrão, sem quebrar nada.
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                },
+
+                // Pede resolução mais alta (ajuda a enxergar o
+                // código de mais longe) e tenta ativar foco
+                // contínuo, quando o hardware permite. Usamos
+                // "advanced" porque restrições aqui são
+                // ignoradas silenciosamente pelos aparelhos que
+                // não suportam, em vez de travar a câmera.
+                videoConstraints: {
+                    facingMode: "environment",
+                    width: {
+                        ideal: 1920
+                    },
+                    height: {
+                        ideal: 1080
+                    },
+                    advanced: [
+                        {
+                            focusMode: "continuous"
+                        }
+                    ]
+                }
 
             },
 
@@ -765,13 +819,19 @@ async (decodedText) => {
 
                 /* =========================================
                    MOSTRAR PROGRESSO
+
+                   Reduzido de 3 para 2 leituras consecutivas:
+                   o dígito verificador do ISBN-13 já filtra
+                   praticamente todo falso positivo, então
+                   exigir 3 confirmações só atrasava o processo
+                   sem ganho real de confiabilidade.
                 ========================================= */
 
-                if (consecutiveReads < 3) {
+                if (consecutiveReads < 2) {
 
                     isbnScannerMessage.textContent =
                         `ISBN detectado. Confirme a leitura... ` +
-                        `${consecutiveReads}/3`;
+                        `${consecutiveReads}/2`;
 
                     return;
                 }
