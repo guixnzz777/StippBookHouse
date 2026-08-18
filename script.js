@@ -194,6 +194,8 @@ async function fetchBookByISBN(isbn) {
         const data =
             await response.json();
 
+console.log("Total de itens:", data.totalItems);
+console.log(JSON.stringify(data, null, 2)); // ADICIONE ESSA LINHA TEMPORARIAMENTE
 
         if (
             !data.items ||
