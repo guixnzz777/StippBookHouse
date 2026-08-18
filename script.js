@@ -159,6 +159,54 @@ function isValidISBN13(isbn) {
     );
 }
 
+
+/* =========================================================
+   BUSCAR LIVRO PELO ISBN — OPEN LIBRARY (FALLBACK)
+========================================================= */
+
+async function fetchFromOpenLibrary(isbn) {
+
+    try {
+
+        const url =
+            `https://openlibrary.org/api/books?bibkeys=ISBN:${encodeURIComponent(isbn)}&jscmd=data&format=json`;
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Erro ao consultar o Open Library."
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        return (
+            data[`ISBN:${isbn}`] ||
+            null
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao buscar ISBN no Open Library:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
 /* =========================================================
    BUSCAR LIVRO PELO ISBN — GOOGLE BOOKS
 ========================================================= */
@@ -176,10 +224,10 @@ async function fetchBookByISBN(isbn) {
         }
 
 
-       const url =
-    `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&key=${GOOGLE_BOOKS_API_KEY}`;
+        const url =
+            `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&key=${GOOGLE_BOOKS_API_KEY}`;
 
-    
+
         const response =
             await fetch(url);
 
@@ -191,39 +239,12 @@ async function fetchBookByISBN(isbn) {
         }
 
 
-      const data =
-    await response.json();
-
-// TEMPORÁRIO — mostra o JSON na tela pra você copiar
-const debugBox = document.createElement("textarea");
-debugBox.value = JSON.stringify(data, null, 2);
-debugBox.style.cssText =
-    "position:fixed;inset:10px;z-index:99999;width:calc(100% - 20px);height:calc(100% - 20px);";
-document.body.appendChild(debugBox);
-debugBox.focus();
-debugBox.select();
-
-        if (
-            !data.items ||
-            !data.items.length
-        ) {
-
-            if (message) {
-                message.textContent =
-                    "ISBN encontrado, mas o livro não foi localizado automaticamente.";
-            }
-
-            return;
-
-        }
-
-
-        const book =
-            data.items[0].volumeInfo;
+        const data =
+            await response.json();
 
 
         /* =================================================
-           PREENCHER FORMULÁRIO
+           ELEMENTOS DO FORMULÁRIO
         ================================================= */
 
         const titleInput =
@@ -262,12 +283,76 @@ debugBox.select();
             );
 
 
+        /* =================================================
+           SEM RESULTADOS NO GOOGLE BOOKS
+        ================================================= */
+
+        const hasGoogleResult =
+            data.items &&
+            data.items.length;
+
+
+        if (!hasGoogleResult) {
+
+            if (message) {
+                message.textContent =
+                    "ISBN encontrado, mas o livro não foi localizado automaticamente. Tentando outra fonte...";
+            }
+
+
+            /* Tenta o Open Library mesmo sem resultado no Google */
+
+            const olData =
+                await fetchFromOpenLibrary(
+                    isbn
+                );
+
+
+            if (olData) {
+
+                fillFormFromOpenLibrary(
+                    olData,
+                    {
+                        titleInput,
+                        authorInput,
+                        publisherInput,
+                        coverInput
+                    }
+                );
+
+
+                if (message) {
+                    message.textContent =
+                        "Dados encontrados no Open Library! Confira as informações antes de cadastrar.";
+                }
+
+            } else if (message) {
+
+                message.textContent =
+                    "Não foi possível localizar o livro automaticamente. Preencha manualmente.";
+
+            }
+
+            return;
+
+        }
+
+
+        const item =
+            data.items[0];
+
+        const book =
+            item.volumeInfo;
+
+
         /* TÍTULO */
 
         if (book.title) {
 
             titleInput.value =
-                book.title;
+                book.subtitle
+                    ? `${book.title}: ${book.subtitle}`
+                    : book.title;
 
         }
 
@@ -352,6 +437,59 @@ debugBox.select();
             descriptionInput.value =
                 book.description;
 
+        } else if (
+            item.searchInfo &&
+            item.searchInfo.textSnippet
+        ) {
+
+            /*
+             * Quando o Google Books não tem uma
+             * descrição completa, usa o trecho
+             * (textSnippet) como fallback.
+             */
+
+            descriptionInput.value =
+                item.searchInfo.textSnippet.replace(
+                    /<\/?b>/g,
+                    ""
+                );
+
+        }
+
+
+        /* =================================================
+           COMPLEMENTAR COM OPEN LIBRARY
+           (só os campos que ficaram vazios)
+        ================================================= */
+
+        const missingSomething =
+            !authorInput.value ||
+            !publisherInput.value ||
+            !coverInput.value;
+
+
+        if (missingSomething) {
+
+            const olData =
+                await fetchFromOpenLibrary(
+                    isbn
+                );
+
+
+            if (olData) {
+
+                fillFormFromOpenLibrary(
+                    olData,
+                    {
+                        titleInput,
+                        authorInput,
+                        publisherInput,
+                        coverInput
+                    }
+                );
+
+            }
+
         }
 
 
@@ -381,6 +519,80 @@ debugBox.select();
     }
 
 }
+
+
+/* =========================================================
+   PREENCHER CAMPOS COM DADOS DO OPEN LIBRARY
+   (só preenche o que ainda estiver vazio)
+========================================================= */
+
+function fillFormFromOpenLibrary(
+    olData,
+    inputs
+) {
+
+    const {
+        titleInput,
+        authorInput,
+        publisherInput,
+        coverInput
+    } = inputs;
+
+
+    if (
+        !titleInput.value &&
+        olData.title
+    ) {
+
+        titleInput.value =
+            olData.title;
+
+    }
+
+
+    if (
+        !authorInput.value &&
+        olData.authors &&
+        olData.authors.length
+    ) {
+
+        authorInput.value =
+            olData.authors
+                .map(author => author.name)
+                .join(", ");
+
+    }
+
+
+    if (
+        !publisherInput.value &&
+        olData.publishers &&
+        olData.publishers.length
+    ) {
+
+        publisherInput.value =
+            olData.publishers
+                .map(publisher => publisher.name)
+                .join(", ");
+
+    }
+
+
+    if (
+        !coverInput.value &&
+        olData.cover
+    ) {
+
+        coverInput.value =
+            olData.cover.large ||
+            olData.cover.medium ||
+            olData.cover.small ||
+            "";
+
+    }
+
+}
+
 
 /* =========================================================
    ABRIR LEITOR
