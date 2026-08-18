@@ -266,12 +266,19 @@ async function fetchFromOpenLibrary(isbn) {
 
 /* =========================================================
    BUSCAR LIVRO PELO ISBN — GOOGLE BOOKS
+
+   Recebe opcionalmente o elemento onde as mensagens de
+   status devem ser exibidas (messageElement). Por padrão
+   usa a mensagem do leitor de câmera (isbnScannerMessage),
+   mas o formulário de catalogação passa a mensagem do
+   próprio formulário (catalogMessage) quando o ISBN é
+   digitado manualmente.
 ========================================================= */
 
-async function fetchBookByISBN(isbn) {
+async function fetchBookByISBN(isbn, messageElement = isbnScannerMessage) {
 
     const message =
-        isbnScannerMessage;
+        messageElement;
 
     try {
 
@@ -997,6 +1004,69 @@ const catalogSubmitButton =
 
 const bookCategory =
     document.getElementById("bookCategory");
+
+
+/* =========================================================
+   ISBN DIGITADO MANUALMENTE NO FORMULÁRIO
+
+   Além do leitor de câmera, o campo de ISBN do formulário
+   de catalogação também busca os dados automaticamente
+   quando a pessoa digita (ou cola) um ISBN-13 completo e
+   válido — útil para quem não consegue usar a câmera.
+========================================================= */
+
+const bookISBNInput =
+    document.getElementById("bookISBN");
+
+let lastTypedISBN = "";
+
+if (bookISBNInput) {
+
+    bookISBNInput.addEventListener(
+        "input",
+        async () => {
+
+            const isbn =
+                bookISBNInput.value.replace(/\D/g, "");
+
+
+            // Só dispara quando o ISBN estiver completo
+            if (isbn.length !== 13) {
+                return;
+            }
+
+
+            // Só dispara se o dígito verificador bater
+            if (!isValidISBN13(isbn)) {
+                return;
+            }
+
+
+            // Evita buscar de novo o mesmo ISBN repetidamente
+            if (isbn === lastTypedISBN) {
+                return;
+            }
+
+
+            lastTypedISBN =
+                isbn;
+
+
+            setMessage(
+                catalogMessage,
+                "ISBN reconhecido! Buscando informações do livro..."
+            );
+
+
+            await fetchBookByISBN(
+                isbn,
+                catalogMessage
+            );
+
+        }
+    );
+
+}
 
 
 /* =========================================================
@@ -2651,6 +2721,12 @@ showCatalogForm.addEventListener(
             "1";
 
 
+        // Reseta o controle do ISBN digitado, para permitir
+        // uma nova busca automática neste novo cadastro
+        lastTypedISBN =
+            "";
+
+
         setMessage(
             catalogMessage
         );
@@ -2800,6 +2876,13 @@ function openEditBookModal(
         "bookCopies"
     ).value =
         book.total_copies || 1;
+
+
+    // Considera o ISBN já preenchido do livro como "já
+    // buscado", para não disparar uma busca automática
+    // desnecessária assim que o modal de edição abre
+    lastTypedISBN =
+        (book.isbn || "").replace(/\D/g, "");
 
 
     setMessage(
@@ -3296,6 +3379,10 @@ catalogForm.addEventListener(
 
                     editingBookId =
                         null;
+
+
+                    lastTypedISBN =
+                        "";
 
 
                     catalogSubmitButton.textContent =
