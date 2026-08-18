@@ -161,6 +161,63 @@ function isValidISBN13(isbn) {
 
 
 /* =========================================================
+   TRADUZIR TEXTO (MyMemory — gratuito, sem chave)
+========================================================= */
+
+async function translateText(
+    text,
+    sourceLang = "en",
+    targetLang = "pt-BR"
+) {
+
+    try {
+
+        const url =
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Erro ao traduzir o texto."
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const translated =
+            data &&
+            data.responseData &&
+            data.responseData.translatedText;
+
+
+        return (
+            translated || text
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao traduzir descrição:",
+            error
+        );
+
+        // Se a tradução falhar, devolve o texto original
+        return text;
+
+    }
+
+}
+
+
+/* =========================================================
    BUSCAR LIVRO PELO ISBN — OPEN LIBRARY (FALLBACK)
 ========================================================= */
 
@@ -445,13 +502,23 @@ async function fetchBookByISBN(isbn) {
             /*
              * Quando o Google Books não tem uma
              * descrição completa, usa o trecho
-             * (textSnippet) como fallback.
+             * (textSnippet) como fallback — esse
+             * snippet costuma vir em inglês, então
+             * traduzimos antes de preencher.
              */
 
-            descriptionInput.value =
+            const rawSnippet =
                 item.searchInfo.textSnippet.replace(
                     /<\/?b>/g,
                     ""
+                );
+
+
+            descriptionInput.value =
+                await translateText(
+                    rawSnippet,
+                    "en",
+                    "pt-BR"
                 );
 
         }
@@ -549,6 +616,17 @@ function fillFormFromOpenLibrary(
 
     }
 
+
+    /*
+     * O campo "authors" do Open Library é
+     * colaborativo e já mostrou associações
+     * erradas em testes (ISBN ligado ao autor
+     * errado). Mesmo assim, mantemos o
+     * preenchimento automático porque funciona
+     * corretamente na maioria dos casos — só é
+     * essencial que o bibliotecário sempre
+     * confira esse campo antes de salvar.
+     */
 
     if (
         !authorInput.value &&
