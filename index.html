@@ -311,7 +311,7 @@
                 </div>
 
 
-                <div class="admin-menu">
+                                <div class="admin-menu">
 
                     <button id="showCatalogForm" class="admin-menu-button" type="button">
 
@@ -327,6 +327,27 @@
 
                             <small>
                                 Adicionar livros ao acervo
+                            </small>
+
+                        </div>
+
+                    </button>
+
+
+                    <button id="showCopyForm" class="admin-menu-button" type="button">
+
+                        <span aria-hidden="true">
+                            📖
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Cadastrar exemplar
+                            </strong>
+
+                            <small>
+                                Adicionar cópia de um livro já existente
                             </small>
 
                         </div>
@@ -713,6 +734,114 @@
 
 
                     <p id="catalogMessage" role="status" aria-live="polite"></p>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             MODAL DE CADASTRO DE EXEMPLAR
+        ================================================== -->
+
+        <div id="copyModal" class="catalog-modal" role="dialog" aria-modal="true" aria-labelledby="copyModalTitle"
+            aria-hidden="true">
+
+            <div class="catalog-modal-overlay copy-modal-overlay"></div>
+
+
+            <div class="catalog-modal-card">
+
+                <div class="catalog-modal-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            Biblioteca
+                        </span>
+
+                        <h2 id="copyModalTitle">
+                            Cadastrar exemplar
+                        </h2>
+
+                    </div>
+
+
+                    <button type="button" id="closeCopyModal" class="close-catalog-modal"
+                        aria-label="Fechar formulário">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="copyForm" class="catalog-form">
+
+                    <!-- LIVRO -->
+
+                    <div class="form-field full-width">
+
+                        <label for="copyBookSelect">
+                            Livro *
+                        </label>
+
+                        <select id="copyBookSelect" required>
+
+                            <option value="">
+                                Selecione um livro
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TOMBO -->
+
+                    <div class="form-field full-width">
+
+                        <label for="copyAssetNumber">
+                            Tombo do novo exemplar *
+                        </label>
+
+                        <input type="text" id="copyAssetNumber" placeholder="Ex.: 000124" autocomplete="off" required>
+
+                    </div>
+
+
+                    <!-- LOCALIZAÇÃO -->
+
+                    <div class="form-field full-width">
+
+                        <label for="copyLocation">
+                            Localização na estante
+                        </label>
+
+                        <input type="text" id="copyLocation" placeholder="Deixe em branco para usar a mesma do livro"
+                            autocomplete="off">
+
+                    </div>
+
+
+                    <!-- BOTÕES -->
+
+                    <div class="catalog-form-actions">
+
+                        <button type="button" id="cancelCopyModal" class="secondary-button">
+                            Cancelar
+                        </button>
+
+
+                        <button type="submit" id="copySubmitButton" class="primary-button">
+                            Cadastrar exemplar
+                        </button>
+
+                    </div>
+
+
+                    <p id="copyMessage" role="status" aria-live="polite"></p>
 
                 </form>
 

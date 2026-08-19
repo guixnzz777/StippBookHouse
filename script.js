@@ -1068,6 +1068,48 @@ const catalogSubmitButton =
 const bookCategory =
     document.getElementById("bookCategory");
 
+    const bookCategory =
+    document.getElementById("bookCategory");
+
+
+/* =========================================================
+   MODAL DE CADASTRO DE EXEMPLAR
+========================================================= */
+
+const showCopyForm =
+    document.getElementById("showCopyForm");
+
+const copyModal =
+    document.getElementById("copyModal");
+
+const closeCopyModal =
+    document.getElementById("closeCopyModal");
+
+const cancelCopyModal =
+    document.getElementById("cancelCopyModal");
+
+const copyModalOverlay =
+    document.querySelector(
+        ".copy-modal-overlay"
+    );
+
+const copyForm =
+    document.getElementById("copyForm");
+
+const copyMessage =
+    document.getElementById("copyMessage");
+
+const copySubmitButton =
+    document.getElementById("copySubmitButton");
+
+const copyBookSelect =
+    document.getElementById("copyBookSelect");
+
+const copyAssetNumberInput =
+    document.getElementById("copyAssetNumber");
+
+const copyLocationInput =
+    document.getElementById("copyLocation");
 
 /* =========================================================
    ISBN DIGITADO MANUALMENTE NO FORMULÁRIO
@@ -3025,6 +3067,443 @@ function closeCatalogModalFunction() {
 
 }
 
+/* =========================================================
+   POPULAR SELECT DE LIVROS (CADASTRO DE EXEMPLAR)
+========================================================= */
+
+function populateCopyBookSelect() {
+
+    copyBookSelect.innerHTML =
+        "";
+
+
+    const defaultOption =
+        document.createElement(
+            "option"
+        );
+
+    defaultOption.value =
+        "";
+
+    defaultOption.textContent =
+        "Selecione um livro";
+
+    copyBookSelect.appendChild(
+        defaultOption
+    );
+
+
+    /*
+     * Usa groupedBooks (um item por título) para não
+     * listar o mesmo livro várias vezes caso ele já
+     * tenha mais de um exemplar cadastrado.
+     */
+
+    groupedBooks
+        .slice()
+        .sort(
+            (a, b) =>
+                (a.title || "").localeCompare(
+                    b.title || ""
+                )
+        )
+        .forEach(
+            book => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    book.id;
+
+                option.textContent =
+                    `${book.title || "Sem título"} — ${
+                        book.author || "Autor desconhecido"
+                    }`;
+
+                copyBookSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   ABRIR / FECHAR MODAL DE EXEMPLAR
+========================================================= */
+
+function openCopyModal() {
+
+    populateCopyBookSelect();
+
+    setModalState(
+        copyModal,
+        true
+    );
+
+
+    document.body.classList.add(
+        "modal-open"
+    );
+
+}
+
+
+function closeCopyModalFunction() {
+
+    setModalState(
+        copyModal,
+        false
+    );
+
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+}
+
+
+showCopyForm.addEventListener(
+    "click",
+    () => {
+
+        if (!currentUserIsAdmin) {
+
+            alert(
+                "Apenas administradores podem cadastrar exemplares."
+            );
+
+            return;
+
+        }
+
+
+        copyForm.reset();
+
+
+        setMessage(
+            copyMessage
+        );
+
+
+        copySubmitButton.textContent =
+            "Cadastrar exemplar";
+
+
+        openCopyModal();
+
+    }
+);
+
+
+closeCopyModal.addEventListener(
+    "click",
+    closeCopyModalFunction
+);
+
+
+cancelCopyModal.addEventListener(
+    "click",
+    closeCopyModalFunction
+);
+
+
+copyModalOverlay.addEventListener(
+    "click",
+    closeCopyModalFunction
+);
+
+
+
+/* =========================================================
+   SALVAR NOVO EXEMPLAR
+========================================================= */
+
+copyForm.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        if (!currentUserIsAdmin) {
+
+            setMessage(
+                copyMessage,
+                "Você não possui permissão de administrador.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const sourceBookId =
+            copyBookSelect.value;
+
+        const assetNumber =
+            copyAssetNumberInput.value.trim();
+
+        const location =
+            copyLocationInput.value.trim();
+
+
+        if (!sourceBookId) {
+
+            setMessage(
+                copyMessage,
+                "Selecione um livro.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!assetNumber) {
+
+            setMessage(
+                copyMessage,
+                "O tombo do exemplar é obrigatório.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const sourceBook =
+            getBookById(
+                sourceBookId
+            );
+
+
+        if (!sourceBook) {
+
+            setMessage(
+                copyMessage,
+                "Livro não encontrado.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        copySubmitButton.disabled =
+            true;
+
+        copySubmitButton.textContent =
+            "Cadastrando...";
+
+
+        setMessage(
+            copyMessage,
+            "Cadastrando exemplar..."
+        );
+
+
+        try {
+
+            /* =================================================
+               PERFIL (confirma admin no servidor)
+            ================================================= */
+
+            const {
+                data: {
+                    user
+                },
+                error: userError
+            } =
+                await db.auth.getUser();
+
+
+            if (userError) {
+                throw userError;
+            }
+
+
+            if (!user) {
+
+                throw new Error(
+                    "Nenhum usuário está autenticado."
+                );
+
+            }
+
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await db
+                    .from("profiles")
+                    .select("role")
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .maybeSingle();
+
+
+            if (profileError) {
+                throw profileError;
+            }
+
+
+            if (
+                !profile ||
+                profile.role !== "admin"
+            ) {
+
+                throw new Error(
+                    "Este usuário não possui permissão de administrador."
+                );
+
+            }
+
+
+            /* =================================================
+               NOVA LINHA — COPIA OS DADOS DO LIVRO ORIGEM
+            ================================================= */
+
+            const newCopyData = {
+
+                title:
+                    sourceBook.title,
+
+                author:
+                    sourceBook.author,
+
+                asset_number:
+                    assetNumber,
+
+                isbn:
+                    sourceBook.isbn,
+
+                publisher:
+                    sourceBook.publisher,
+
+                publication_year:
+                    sourceBook.publication_year,
+
+                genre:
+                    sourceBook.genre,
+
+                category_id:
+                    sourceBook.category_id,
+
+                description:
+                    sourceBook.description,
+
+                cover_url:
+                    sourceBook.cover_url,
+
+                shelf_location:
+                    location ||
+                    sourceBook.shelf_location,
+
+                book_group_id:
+                    sourceBook.book_group_id,
+
+                total_copies: 1,
+
+                available_copies: 1,
+
+                status:
+                    "available"
+
+            };
+
+
+            const {
+                data,
+                error
+            } =
+                await db
+                    .from("books")
+                    .insert(
+                        newCopyData
+                    )
+                    .select()
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            console.log(
+                "Exemplar cadastrado:",
+                data
+            );
+
+
+            setMessage(
+                copyMessage,
+                "Exemplar cadastrado com sucesso!",
+                "success"
+            );
+
+
+            await loadBooks();
+
+
+            setTimeout(
+                () => {
+
+                    closeCopyModalFunction();
+
+
+                    copyForm.reset();
+
+
+                    copySubmitButton.textContent =
+                        "Cadastrar exemplar";
+
+                },
+                900
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao cadastrar exemplar:",
+                error
+            );
+
+
+            setMessage(
+                copyMessage,
+                error.message ||
+                "Não foi possível cadastrar o exemplar.",
+                "error"
+            );
+
+        } finally {
+
+            copySubmitButton.disabled =
+                false;
+
+            copySubmitButton.textContent =
+                "Cadastrar exemplar";
+
+        }
+
+    }
+);
 
 /* =========================================================
    NOVO LIVRO
