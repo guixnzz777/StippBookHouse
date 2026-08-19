@@ -1068,9 +1068,6 @@ const catalogSubmitButton =
 const bookCategory =
     document.getElementById("bookCategory");
 
-    const bookCategory =
-    document.getElementById("bookCategory");
-
 
 /* =========================================================
    MODAL DE CADASTRO DE EXEMPLAR
