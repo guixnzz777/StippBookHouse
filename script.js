@@ -32,6 +32,8 @@ const GOOGLE_BOOKS_API_KEY =
 
 let books = [];
 
+let groupedBooks = [];
+
 let categories = [];
 
 let currentUserIsAdmin = false;
@@ -1519,6 +1521,70 @@ function setModalState(
 
 }
 
+/* =========================================================
+   AGRUPAR EXEMPLARES DO MESMO LIVRO
+
+   Junta todas as linhas que compartilham o mesmo
+   book_group_id em um único "grupo" — somando os
+   exemplares (total e disponíveis) e guardando as linhas
+   originais em group.copies, para uso futuro (ex: listar
+   os tombos individuais de cada exemplar).
+========================================================= */
+
+function groupBooksByTitle(rawBooks) {
+
+    const groupsMap =
+        new Map();
+
+
+    rawBooks.forEach(
+        book => {
+
+            const groupKey =
+                book.book_group_id ||
+                book.id;
+
+
+            if (!groupsMap.has(groupKey)) {
+
+                groupsMap.set(
+                    groupKey,
+                    {
+                        ...book,
+                        total_copies: 0,
+                        available_copies: 0,
+                        copies: []
+                    }
+                );
+
+            }
+
+
+            const group =
+                groupsMap.get(groupKey);
+
+
+            group.total_copies +=
+                Number(book.total_copies) || 0;
+
+            group.available_copies +=
+                Number(book.available_copies) || 0;
+
+
+            group.copies.push(
+                book
+            );
+
+        }
+    );
+
+
+    return Array.from(
+        groupsMap.values()
+    );
+
+}
+
 
 /* =========================================================
    CATEGORIAS
@@ -2132,8 +2198,11 @@ async function loadBooks() {
         }
 
 
-        books =
+               books =
             data || [];
+
+        groupedBooks =
+            groupBooksByTitle(books);
 
 
         searchBooks();
@@ -2194,10 +2263,10 @@ function searchBooks() {
         );
 
 
-    if (!query) {
+       if (!query) {
 
         renderBooks(
-            books
+            groupedBooks
         );
 
         return;
@@ -2206,7 +2275,7 @@ function searchBooks() {
 
 
     const filteredBooks =
-        books.filter(
+        groupedBooks.filter(
             book => {
 
                 const title =
@@ -2224,9 +2293,13 @@ function searchBooks() {
                         book.genre
                     );
 
-                const assetNumber =
+                              const assetNumber =
                     normalizeText(
-                        book.asset_number
+                        (book.copies || [])
+                            .map(
+                                copy => copy.asset_number
+                            )
+                            .join(" ")
                     );
 
                 const category =
