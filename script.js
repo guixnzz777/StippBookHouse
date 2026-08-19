@@ -3411,7 +3411,7 @@ copyForm.addEventListener(
                     sourceBook.shelf_location,
 
                 book_group_id:
-                    sourceBook.book_group_id,
+                    sourceBook.book_group_id || sourceBook.id,
 
                 total_copies: 1,
 
