@@ -3245,11 +3245,25 @@ copyForm.addEventListener(
         const sourceBookId =
             copyBookSelect.value;
 
-        const assetNumber =
-            copyAssetNumberInput.value.trim();
-
         const location =
             copyLocationInput.value.trim();
+
+
+        /* =================================================
+           LER E LIMPAR A LISTA DE TOMBOS
+           Aceita um tombo por linha (ou separados por
+           vírgula), remove espaços e linhas vazias, e
+           remove duplicados dentro da própria lista.
+        ================================================= */
+
+        const rawTombos =
+            copyAssetNumberInput.value
+                .split(/[\n,]+/)
+                .map(item => item.trim())
+                .filter(Boolean);
+
+        const assetNumbers =
+            [...new Set(rawTombos)];
 
 
         if (!sourceBookId) {
@@ -3265,11 +3279,11 @@ copyForm.addEventListener(
         }
 
 
-        if (!assetNumber) {
+        if (!assetNumbers.length) {
 
             setMessage(
                 copyMessage,
-                "O tombo do exemplar é obrigatório.",
+                "Informe pelo menos um tombo.",
                 "error"
             );
 
@@ -3306,7 +3320,7 @@ copyForm.addEventListener(
 
         setMessage(
             copyMessage,
-            "Cadastrando exemplar..."
+            `Cadastrando ${assetNumbers.length} exemplar(es)...`
         );
 
 
@@ -3371,56 +3385,60 @@ copyForm.addEventListener(
 
 
             /* =================================================
-               NOVA LINHA — COPIA OS DADOS DO LIVRO ORIGEM
+               UMA LINHA POR TOMBO — TODAS COPIANDO O LIVRO ORIGEM
             ================================================= */
 
-            const newCopyData = {
+            const newCopiesData =
+                assetNumbers.map(
+                    assetNumber => ({
 
-                title:
-                    sourceBook.title,
+                        title:
+                            sourceBook.title,
 
-                author:
-                    sourceBook.author,
+                        author:
+                            sourceBook.author,
 
-                asset_number:
-                    assetNumber,
+                        asset_number:
+                            assetNumber,
 
-                isbn:
-                    sourceBook.isbn,
+                        isbn:
+                            sourceBook.isbn,
 
-                publisher:
-                    sourceBook.publisher,
+                        publisher:
+                            sourceBook.publisher,
 
-                publication_year:
-                    sourceBook.publication_year,
+                        publication_year:
+                            sourceBook.publication_year,
 
-                genre:
-                    sourceBook.genre,
+                        genre:
+                            sourceBook.genre,
 
-                category_id:
-                    sourceBook.category_id,
+                        category_id:
+                            sourceBook.category_id,
 
-                description:
-                    sourceBook.description,
+                        description:
+                            sourceBook.description,
 
-                cover_url:
-                    sourceBook.cover_url,
+                        cover_url:
+                            sourceBook.cover_url,
 
-                shelf_location:
-                    location ||
-                    sourceBook.shelf_location,
+                        shelf_location:
+                            location ||
+                            sourceBook.shelf_location,
 
-                book_group_id:
-                    sourceBook.book_group_id || sourceBook.id,
+                        book_group_id:
+                            sourceBook.book_group_id ||
+                            sourceBook.id,
 
-                total_copies: 1,
+                        total_copies: 1,
 
-                available_copies: 1,
+                        available_copies: 1,
 
-                status:
-                    "available"
+                        status:
+                            "available"
 
-            };
+                    })
+                );
 
 
             const {
@@ -3430,10 +3448,9 @@ copyForm.addEventListener(
                 await db
                     .from("books")
                     .insert(
-                        newCopyData
+                        newCopiesData
                     )
-                    .select()
-                    .single();
+                    .select();
 
 
             if (error) {
@@ -3442,14 +3459,14 @@ copyForm.addEventListener(
 
 
             console.log(
-                "Exemplar cadastrado:",
+                "Exemplares cadastrados:",
                 data
             );
 
 
             setMessage(
                 copyMessage,
-                "Exemplar cadastrado com sucesso!",
+                `${data.length} exemplar(es) cadastrado(s) com sucesso!`,
                 "success"
             );
 
@@ -3457,27 +3474,22 @@ copyForm.addEventListener(
             await loadBooks();
 
 
-            setTimeout(
-                () => {
+            /* =================================================
+               NÃO FECHA O MODAL — só limpa a lista de tombos,
+               mantendo o mesmo livro selecionado, para você
+               continuar cadastrando o próximo lote rapidinho.
+            ================================================= */
 
-                    closeCopyModalFunction();
+            copyAssetNumberInput.value =
+                "";
 
-
-                    copyForm.reset();
-
-
-                    copySubmitButton.textContent =
-                        "Cadastrar exemplar";
-
-                },
-                900
-            );
+            copyAssetNumberInput.focus();
 
 
         } catch (error) {
 
             console.error(
-                "Erro ao cadastrar exemplar:",
+                "Erro ao cadastrar exemplares:",
                 error
             );
 
@@ -3485,7 +3497,7 @@ copyForm.addEventListener(
             setMessage(
                 copyMessage,
                 error.message ||
-                "Não foi possível cadastrar o exemplar.",
+                "Não foi possível cadastrar os exemplares.",
                 "error"
             );
 
