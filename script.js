@@ -4022,12 +4022,12 @@ async function initializeApp() {
 
         await loadCategories();
 
-        await loadBooks();
-
         await checkUser();
 
+        await loadBooks();
 
     } catch (error) {
+    
 
         console.error(
             "Erro durante a inicialização:",
