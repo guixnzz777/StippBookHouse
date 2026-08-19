@@ -2105,12 +2105,20 @@ async function loadBooks() {
 
     try {
 
+        // Admin vê tudo (inclusive o tombo). Visitante e
+        // usuário comum não recebem a coluna asset_number.
+        const columnsToSelect =
+            currentUserIsAdmin
+                ? "*"
+                : "id, title, author, isbn, publisher, publication_year, genre, description, cover_url, shelf_location, total_copies, available_copies, status, category_id, created_at, updated_at, book_group_id";
+
+
         const {
             data,
             error
         } = await db
             .from("books")
-            .select("*")
+            .select(columnsToSelect)
             .order(
                 "title",
                 {
