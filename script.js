@@ -4695,20 +4695,53 @@ function closeLoansModalFunction() {
     document.body.classList.remove("modal-open");
 }
 
-showLoansButton.addEventListener("click", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    if (!currentUserIsAdmin) {
-        alert("Apenas administradores podem acessar os empréstimos.");
+    const loansButton = document.getElementById("showLoansButton");
+    const loansModalElement = document.getElementById("loansModal");
+    const closeLoansButton = document.getElementById("closeLoansModal");
+    const loansOverlay = document.querySelector(".loans-modal-overlay");
+
+    if (!loansButton) {
+        console.error("ERRO: botão showLoansButton não encontrado.");
         return;
     }
 
-    openLoansModal();
-    await loadLoans();
+    if (!loansModalElement) {
+        console.error("ERRO: loansModal não encontrado.");
+        return;
+    }
+
+    loansButton.addEventListener("click", async () => {
+
+        console.log("Botão Empréstimos clicado.");
+
+        if (!currentUserIsAdmin) {
+            alert("Apenas administradores podem acessar os empréstimos.");
+            return;
+        }
+
+        setModalState(loansModalElement, true);
+        document.body.classList.add("modal-open");
+
+        await loadLoans();
+    });
+
+    if (closeLoansButton) {
+        closeLoansButton.addEventListener(
+            "click",
+            closeLoansModalFunction
+        );
+    }
+
+    if (loansOverlay) {
+        loansOverlay.addEventListener(
+            "click",
+            closeLoansModalFunction
+        );
+    }
 
 });
-
-closeLoansModal.addEventListener("click", closeLoansModalFunction);
-loansModalOverlay.addEventListener("click", closeLoansModalFunction);
 
 
 /* ===== CARREGAR / RENDERIZAR EMPRÉSTIMOS ===== */
