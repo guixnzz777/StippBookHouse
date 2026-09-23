@@ -4572,6 +4572,607 @@ document.addEventListener(
     }
 );
 
+/* =========================================================
+   EMPRÉSTIMOS
+========================================================= */
+
+const showLoansButton =
+    document.getElementById("showLoansButton");
+
+const loansModal =
+    document.getElementById("loansModal");
+
+const closeLoansModal =
+    document.getElementById("closeLoansModal");
+
+const loansModalOverlay =
+    document.querySelector(".loans-modal-overlay");
+
+const loanSearchInput =
+    document.getElementById("loanSearchInput");
+
+const loansList =
+    document.getElementById("loansList");
+
+const loansMessage =
+    document.getElementById("loansMessage");
+
+const showNewLoanForm =
+    document.getElementById("showNewLoanForm");
+
+const newLoanModal =
+    document.getElementById("newLoanModal");
+
+const closeNewLoanModal =
+    document.getElementById("closeNewLoanModal");
+
+const cancelNewLoanModal =
+    document.getElementById("cancelNewLoanModal");
+
+const newLoanModalOverlay =
+    document.querySelector(".new-loan-modal-overlay");
+
+const newLoanForm =
+    document.getElementById("newLoanForm");
+
+const newLoanMessage =
+    document.getElementById("newLoanMessage");
+
+const newLoanSubmitButton =
+    document.getElementById("newLoanSubmitButton");
+
+const loanBookSelect =
+    document.getElementById("loanBookSelect");
+
+const loanCopySelect =
+    document.getElementById("loanCopySelect");
+
+const loanStudentNameInput =
+    document.getElementById("loanStudentName");
+
+const loanStudentGradeInput =
+    document.getElementById("loanStudentGrade");
+
+const loanDueDateInput =
+    document.getElementById("loanDueDate");
+
+
+let loans = [];
+
+
+function getBookGroupKey(book) {
+
+    return (
+        book.book_group_id ||
+        book.id
+    );
+
+}
+
+
+async function requireAdminProfile() {
+
+    const {
+        data: { user },
+        error: userError
+    } = await db.auth.getUser();
+
+    if (userError) throw userError;
+
+    if (!user) {
+        throw new Error("Nenhum usuário está autenticado.");
+    }
+
+    const {
+        data: profile,
+        error: profileError
+    } = await db
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    if (!profile || profile.role !== "admin") {
+        throw new Error("Este usuário não possui permissão de administrador.");
+    }
+
+    return user;
+
+}
+
+
+/* ===== ABRIR / FECHAR LISTA DE EMPRÉSTIMOS ===== */
+
+function openLoansModal() {
+    setModalState(loansModal, true);
+    document.body.classList.add("modal-open");
+}
+
+function closeLoansModalFunction() {
+    setModalState(loansModal, false);
+    document.body.classList.remove("modal-open");
+}
+
+showLoansButton.addEventListener("click", async () => {
+
+    if (!currentUserIsAdmin) {
+        alert("Apenas administradores podem acessar os empréstimos.");
+        return;
+    }
+
+    openLoansModal();
+    await loadLoans();
+
+});
+
+closeLoansModal.addEventListener("click", closeLoansModalFunction);
+loansModalOverlay.addEventListener("click", closeLoansModalFunction);
+
+
+/* ===== CARREGAR / RENDERIZAR EMPRÉSTIMOS ===== */
+
+async function loadLoans() {
+
+    loansList.innerHTML = "<p>Carregando empréstimos...</p>";
+
+    try {
+
+        const { data, error } = await db
+            .from("loans")
+            .select(
+                "id, book_id, student_name, student_grade, borrowed_at, due_date, returned_at, status, books(title, asset_number, author)"
+            )
+            .eq("status", "active")
+            .order("due_date", { ascending: true });
+
+        if (error) throw error;
+
+        loans = data || [];
+
+        searchLoans();
+
+    } catch (error) {
+
+        console.error("Erro ao carregar empréstimos:", error);
+
+        loansList.innerHTML = "";
+
+        const message = document.createElement("p");
+        message.textContent = "Erro ao carregar os empréstimos.";
+        loansList.appendChild(message);
+
+    }
+
+}
+
+
+function isLoanOverdue(loan) {
+
+    if (loan.status !== "active" || !loan.due_date) {
+        return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const due = new Date(loan.due_date + "T00:00:00");
+
+    return due < today;
+
+}
+
+
+function formatDateBR(value) {
+
+    if (!value) return "—";
+
+    const date = new Date(
+        value.length === 10 ? value + "T00:00:00" : value
+    );
+
+    if (Number.isNaN(date.getTime())) return "—";
+
+    return date.toLocaleDateString("pt-BR");
+
+}
+
+
+function createLoanCard(loan) {
+
+    const card = document.createElement("article");
+    const overdue = isLoanOverdue(loan);
+
+    card.className = overdue ? "loan-card overdue" : "loan-card";
+
+    const info = document.createElement("div");
+
+    const title = document.createElement("h4");
+    title.textContent = (loan.books && loan.books.title) || "Livro não encontrado";
+
+    const student = document.createElement("p");
+    student.textContent = `${loan.student_name || "—"} — ${loan.student_grade || "—"}`;
+
+    const asset = document.createElement("p");
+    asset.textContent = `Tombo: ${(loan.books && loan.books.asset_number) || "—"}`;
+
+    const dates = document.createElement("p");
+    dates.textContent = `Emprestado em ${formatDateBR(loan.borrowed_at)} — devolução prevista em ${formatDateBR(loan.due_date)}`;
+
+    const status = document.createElement("p");
+    status.className = "loan-status";
+    status.textContent = overdue ? "Atrasado" : "No prazo";
+
+    info.appendChild(title);
+    info.appendChild(student);
+    info.appendChild(asset);
+    info.appendChild(dates);
+    info.appendChild(status);
+
+    const actions = document.createElement("div");
+    actions.className = "loan-card-actions";
+
+    const returnButton = document.createElement("button");
+    returnButton.type = "button";
+    returnButton.className = "return-loan-button";
+    returnButton.textContent = "Marcar devolução";
+
+    returnButton.addEventListener("click", () => {
+        markLoanReturned(loan.id);
+    });
+
+    actions.appendChild(returnButton);
+
+    card.appendChild(info);
+    card.appendChild(actions);
+
+    return card;
+
+}
+
+
+function renderLoans(list) {
+
+    loansList.innerHTML = "";
+
+    if (!Array.isArray(list) || !list.length) {
+        const message = document.createElement("p");
+        message.textContent = "Nenhum empréstimo ativo encontrado.";
+        loansList.appendChild(message);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    list.forEach(loan => {
+        fragment.appendChild(createLoanCard(loan));
+    });
+
+    loansList.appendChild(fragment);
+
+}
+
+
+function searchLoans() {
+
+    const query = normalizeText(loanSearchInput.value);
+
+    if (!query) {
+        renderLoans(loans);
+        return;
+    }
+
+    const filtered = loans.filter(loan => {
+
+        const name = normalizeText(loan.student_name);
+        const grade = normalizeText(loan.student_grade);
+        const title = normalizeText(loan.books && loan.books.title);
+        const asset = normalizeText(loan.books && loan.books.asset_number);
+
+        return (
+            name.includes(query) ||
+            grade.includes(query) ||
+            title.includes(query) ||
+            asset.includes(query)
+        );
+
+    });
+
+    renderLoans(filtered);
+
+}
+
+loanSearchInput.addEventListener("input", searchLoans);
+
+
+/* ===== NOVO EMPRÉSTIMO ===== */
+
+function populateLoanBookSelect() {
+
+    loanBookSelect.innerHTML = "";
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Selecione um livro";
+    loanBookSelect.appendChild(defaultOption);
+
+    groupedBooks
+        .filter(book => Number(book.available_copies) > 0)
+        .slice()
+        .sort((a, b) => (a.title || "").localeCompare(b.title || ""))
+        .forEach(book => {
+
+            const option = document.createElement("option");
+            option.value = getBookGroupKey(book);
+            option.textContent = `${book.title || "Sem título"} — ${book.author || "Autor desconhecido"}`;
+            loanBookSelect.appendChild(option);
+
+        });
+
+}
+
+
+function populateLoanCopySelect(groupKey) {
+
+    loanCopySelect.innerHTML = "";
+
+    if (!groupKey) {
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Selecione um livro primeiro";
+        loanCopySelect.appendChild(defaultOption);
+        loanCopySelect.disabled = true;
+        return;
+    }
+
+    const availableCopies = books.filter(
+        book =>
+            String(getBookGroupKey(book)) === String(groupKey) &&
+            Number(book.available_copies) > 0
+    );
+
+    if (!availableCopies.length) {
+        const emptyOption = document.createElement("option");
+        emptyOption.value = "";
+        emptyOption.textContent = "Nenhum exemplar disponível";
+        loanCopySelect.appendChild(emptyOption);
+        loanCopySelect.disabled = true;
+        return;
+    }
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Selecione o tombo";
+    loanCopySelect.appendChild(defaultOption);
+
+    availableCopies.forEach(copy => {
+        const option = document.createElement("option");
+        option.value = copy.id;
+        option.textContent = copy.asset_number || `Exemplar #${copy.id}`;
+        loanCopySelect.appendChild(option);
+    });
+
+    loanCopySelect.disabled = false;
+
+}
+
+loanBookSelect.addEventListener("change", () => {
+    populateLoanCopySelect(loanBookSelect.value);
+});
+
+
+function openNewLoanModal() {
+
+    newLoanForm.reset();
+    setMessage(newLoanMessage);
+    populateLoanBookSelect();
+    populateLoanCopySelect("");
+
+    setModalState(newLoanModal, true);
+    document.body.classList.add("modal-open");
+
+}
+
+function closeNewLoanModalFunction() {
+    setModalState(newLoanModal, false);
+    document.body.classList.remove("modal-open");
+}
+
+showNewLoanForm.addEventListener("click", () => {
+
+    if (!currentUserIsAdmin) {
+        alert("Apenas administradores podem registrar empréstimos.");
+        return;
+    }
+
+    openNewLoanModal();
+
+});
+
+closeNewLoanModal.addEventListener("click", closeNewLoanModalFunction);
+cancelNewLoanModal.addEventListener("click", closeNewLoanModalFunction);
+newLoanModalOverlay.addEventListener("click", closeNewLoanModalFunction);
+
+
+newLoanForm.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    if (!currentUserIsAdmin) {
+        setMessage(newLoanMessage, "Você não possui permissão de administrador.", "error");
+        return;
+    }
+
+    const copyId = loanCopySelect.value;
+    const studentName = loanStudentNameInput.value.trim();
+    const studentGrade = loanStudentGradeInput.value.trim();
+    const dueDate = loanDueDateInput.value;
+
+    if (!loanBookSelect.value) {
+        setMessage(newLoanMessage, "Selecione um livro.", "error");
+        return;
+    }
+
+    if (!copyId) {
+        setMessage(newLoanMessage, "Selecione o tombo do exemplar.", "error");
+        return;
+    }
+
+    if (!studentName) {
+        setMessage(newLoanMessage, "Informe o nome do aluno.", "error");
+        return;
+    }
+
+    if (!studentGrade) {
+        setMessage(newLoanMessage, "Informe a série do aluno.", "error");
+        return;
+    }
+
+    if (!dueDate) {
+        setMessage(newLoanMessage, "Informe a previsão de devolução.", "error");
+        return;
+    }
+
+    newLoanSubmitButton.disabled = true;
+    newLoanSubmitButton.textContent = "Registrando...";
+    setMessage(newLoanMessage, "Registrando empréstimo...");
+
+    try {
+
+        const user = await requireAdminProfile();
+
+        const copyBook = getBookById(copyId);
+
+        if (!copyBook || Number(copyBook.available_copies) < 1) {
+            throw new Error("Este exemplar não está mais disponível.");
+        }
+
+        const { error: loanError } = await db
+            .from("loans")
+            .insert({
+                book_id: copyId,
+                user_id: user.id,
+                student_name: studentName,
+                student_grade: studentGrade,
+                due_date: dueDate,
+                status: "active"
+            });
+
+        if (loanError) throw loanError;
+
+        const { error: bookError } = await db
+            .from("books")
+            .update({ available_copies: 0 })
+            .eq("id", copyId);
+
+        if (bookError) throw bookError;
+
+        setMessage(newLoanMessage, "Empréstimo registrado com sucesso!", "success");
+
+        await loadBooks();
+        await loadLoans();
+
+        setTimeout(() => {
+            closeNewLoanModalFunction();
+        }, 700);
+
+    } catch (error) {
+
+        console.error("Erro ao registrar empréstimo:", error);
+
+        setMessage(
+            newLoanMessage,
+            error.message || "Não foi possível registrar o empréstimo.",
+            "error"
+        );
+
+    } finally {
+
+        newLoanSubmitButton.disabled = false;
+        newLoanSubmitButton.textContent = "Registrar empréstimo";
+
+    }
+
+});
+
+
+/* ===== MARCAR DEVOLUÇÃO ===== */
+
+async function markLoanReturned(loanId) {
+
+    if (!currentUserIsAdmin) {
+        alert("Apenas administradores podem marcar devoluções.");
+        return;
+    }
+
+    const loan = loans.find(item => String(item.id) === String(loanId));
+
+    if (!loan) {
+        alert("Empréstimo não encontrado.");
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `Confirmar devolução do livro "${(loan.books && loan.books.title) || ""}" por ${loan.student_name || "aluno"}?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+
+        await requireAdminProfile();
+
+        const { error: loanError } = await db
+            .from("loans")
+            .update({
+                returned_at: new Date().toISOString(),
+                status: "returned"
+            })
+            .eq("id", loanId);
+
+        if (loanError) throw loanError;
+
+        const { error: bookError } = await db
+            .from("books")
+            .update({ available_copies: 1 })
+            .eq("id", loan.book_id);
+
+        if (bookError) throw bookError;
+
+        await loadBooks();
+        await loadLoans();
+
+    } catch (error) {
+
+        console.error("Erro ao marcar devolução:", error);
+
+        alert(
+            "Não foi possível marcar a devolução.\n\n" +
+            (error.message || "Erro desconhecido.")
+        );
+
+    }
+
+}
+
+
+/* ===== ESC — MODAIS DE EMPRÉSTIMOS (separado do listener existente) ===== */
+
+document.addEventListener("keydown", event => {
+
+    if (event.key !== "Escape") return;
+
+    if (newLoanModal.classList.contains("active")) {
+        closeNewLoanModalFunction();
+        return;
+    }
+
+    if (loansModal.classList.contains("active")) {
+        closeLoansModalFunction();
+    }
+
+});
 
 /* =========================================================
    INICIALIZAÇÃO

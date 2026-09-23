@@ -354,6 +354,26 @@
 
                     </button>
 
+                    <button id="showLoansButton" class="admin-menu-button" type="button">
+
+                        <span aria-hidden="true">
+                            🔄
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Empréstimos
+                            </strong>
+
+                            <small>
+                                Registrar e controlar empréstimos de livros
+                            </small>
+
+                        </div>
+
+                    </button>
+
                 </div>
 
 
@@ -846,6 +866,119 @@
                 </form>
 
             </div>
+
+            <!-- ==================================================
+     MODAL DE EMPRÉSTIMOS (LISTA)
+================================================== -->
+
+            <div id="loansModal" class="catalog-modal loans-modal" role="dialog" aria-modal="true"
+                aria-labelledby="loansModalTitle" aria-hidden="true">
+
+                <div class="catalog-modal-overlay loans-modal-overlay"></div>
+
+                <div class="catalog-modal-card loans-modal-card">
+
+                    <div class="catalog-modal-header">
+
+                        <div>
+                            <span class="eyebrow">Biblioteca</span>
+                            <h2 id="loansModalTitle">Empréstimos</h2>
+                        </div>
+
+                        <button type="button" id="closeLoansModal" class="close-catalog-modal"
+                            aria-label="Fechar empréstimos">×</button>
+
+                    </div>
+
+                    <div class="loans-toolbar">
+
+                        <label class="visually-hidden" for="loanSearchInput">Pesquisar empréstimos</label>
+                        <input type="search" id="loanSearchInput" placeholder="Pesquisar por aluno ou série..."
+                            autocomplete="off">
+
+                        <button type="button" id="showNewLoanForm" class="primary-button">+ Novo empréstimo</button>
+
+                    </div>
+
+                    <div id="loansList" class="loans-list" aria-live="polite"></div>
+
+                    <p id="loansMessage" role="status" aria-live="polite"></p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+     MODAL DE NOVO EMPRÉSTIMO
+================================================== -->
+
+            <div id="newLoanModal" class="catalog-modal" role="dialog" aria-modal="true"
+                aria-labelledby="newLoanModalTitle" aria-hidden="true">
+
+                <div class="catalog-modal-overlay new-loan-modal-overlay"></div>
+
+                <div class="catalog-modal-card">
+
+                    <div class="catalog-modal-header">
+
+                        <div>
+                            <span class="eyebrow">Biblioteca</span>
+                            <h2 id="newLoanModalTitle">Novo empréstimo</h2>
+                        </div>
+
+                        <button type="button" id="closeNewLoanModal" class="close-catalog-modal"
+                            aria-label="Fechar formulário">×</button>
+
+                    </div>
+
+                    <form id="newLoanForm" class="catalog-form">
+
+                        <div class="form-field full-width">
+                            <label for="loanBookSelect">Livro *</label>
+                            <select id="loanBookSelect" required>
+                                <option value="">Selecione um livro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="loanCopySelect">Tombo do exemplar *</label>
+                            <select id="loanCopySelect" required disabled>
+                                <option value="">Selecione um livro primeiro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="loanStudentName">Nome do aluno *</label>
+                            <input type="text" id="loanStudentName" placeholder="Nome completo" autocomplete="off"
+                                required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="loanStudentGrade">Série *</label>
+                            <input type="text" id="loanStudentGrade" placeholder="Ex.: 7º Ano B" autocomplete="off"
+                                required>
+                        </div>
+
+                        <div class="form-field full-width">
+                            <label for="loanDueDate">Previsão de devolução *</label>
+                            <input type="date" id="loanDueDate" required>
+                        </div>
+
+                        <div class="catalog-form-actions">
+                            <button type="button" id="cancelNewLoanModal" class="secondary-button">Cancelar</button>
+                            <button type="submit" id="newLoanSubmitButton" class="primary-button">Registrar
+                                empréstimo</button>
+                        </div>
+
+                        <p id="newLoanMessage" role="status" aria-live="polite"></p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
 
         </div>
 

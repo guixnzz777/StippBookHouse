@@ -2232,3 +2232,118 @@ img {
 
     font-weight: 600;
 }
+
+
+/* =========================================================
+   EMPRÉSTIMOS
+========================================================= */
+
+.loans-modal-card {
+    width: min(920px, 100%);
+}
+
+.loans-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.loans-toolbar input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.loans-toolbar input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(49, 92, 76, 0.1);
+}
+
+.loans-toolbar .primary-button {
+    white-space: nowrap;
+}
+
+.loans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.loan-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px 20px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    align-items: center;
+}
+
+.loan-card.overdue {
+    border-color: var(--danger-border);
+    background: var(--danger-bg);
+}
+
+.loan-card h4 {
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+.loan-card p {
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.loan-card .loan-status {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.loan-card.overdue .loan-status {
+    color: var(--danger);
+}
+
+.return-loan-button {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--surface-soft);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.return-loan-button:hover {
+    background: #e4dfd5;
+    border-color: #c9c2b5;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 700px) {
+
+    .loans-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .loan-card {
+        grid-template-columns: 1fr;
+    }
+
+}
